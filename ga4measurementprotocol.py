@@ -21,7 +21,6 @@ class Ga4mp(object):
     # when this function is called it will add a new event to the event_list
     def add_event(self, event_type, event_parameters):
 
-
         # check for any missing or invalid parameters
         parameter_keys = event_parameters.keys()
         params = self.get_params(event_type) if self.get_params(event_type) is not None else []
@@ -34,8 +33,6 @@ class Ga4mp(object):
         new_event = {'name': event_type,
                      'params': event_parameters}
         self.event_list.append(new_event)
-
-
 
     def send_hit(self, validation_hit=False):
 
@@ -60,7 +57,6 @@ class Ga4mp(object):
             batch_number += 1
 
         self.event_list = []
-
 
     def get_params(self, key):
         params_dict = {'ad_click' : ['ad_event_id'],
