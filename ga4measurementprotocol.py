@@ -4,6 +4,7 @@ import requests
 import json
 # import retrying
 
+
 class Ga4mp(object):
 
     def __init__(self, measurement_id, api_secret, client_id):
@@ -25,10 +26,11 @@ class Ga4mp(object):
         parameter_keys = event_parameters.keys()
         params = self.get_params(event_type) if self.get_params(event_type) is not None else []
 
-        for x in params:
-            if x not in parameter_keys:
-                raise Exception(
-                    "Event parameters do not match event type.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735")
+        for parameter in params:
+            if parameter not in parameter_keys:
+                print("WARNING: Event parameters do not match event type.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735")
+                #TODO: make it dynamic. Say which event type and parameters are expected. use f string
+                # 'ad_click' : ['ad_event_id']
 
         new_event = {'name': event_type,
                      'params': event_parameters}
