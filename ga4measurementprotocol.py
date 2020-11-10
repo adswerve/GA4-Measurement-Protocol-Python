@@ -28,7 +28,7 @@ class Ga4mp(object):
 
         for parameter in params:
             if parameter not in parameter_keys:
-                print("WARNING: Event parameters do not match event type.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735")
+                print(f"WARNING: Event parameters do not match event type.\nFor {event_type} event type, the correct parameter(s) are {params}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
                 #TODO: make it dynamic. Say which event type and parameters are expected. use f string
                 # 'ad_click' : ['ad_event_id']
 

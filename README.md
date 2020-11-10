@@ -1,27 +1,35 @@
-# Ga4-Measurement-Protocol-Python
+# Google Analytics GA4 Measurement Protocol Library
 
-## 1. Purpose
+This library provides an interface for sending data to Google Analytics 4 properties using Measurement Protocol.
 
-Collects/sends data to Google Analytics 4 (GA4).
+*NOTE* Google Analytics 4 is in Alpha as of the latest update
+
+## Use
+
+BSD 3-Clause license can be found in ./LICENSE
+
+## Contact
+
+analytics-help@adswerve.com
 
 
-## 2. Background
+## Background
 [Meet the next generation of Google Analytics: Learn about the new Google Analytics and how to get started](https://support.google.com/analytics/answer/10089681)
 
 
-## 3. Project set up
+## Set up
 
-### 3.1 Create a Google Analytics 4 acccount or upgrade from Universal Analytics.
+### 1. Create a Google Analytics 4 acccount or upgrade from Universal Analytics.
 
 
 [Upgrade to a Google Analytics 4 property
 Set up a Google Analytics 4 property (formerly known as an App + Web property) alongside your existing Universal Analytics property.](https://support.google.com/analytics/answer/9744165?hl=en)
 
 
-### 3.2 Obtain credentials
+### 2 Obtain credentials
 
 
-#### 3.2.1 MEASUREMENT_ID
+#### 2.1 MEASUREMENT_ID
 
 - GA
 - Admin
@@ -29,9 +37,7 @@ Set up a Google Analytics 4 property (formerly known as an App + Web property) a
 - choose your stream
 - MEASUREMENT ID
 
-
-
-#### 3.2.2 API_SECRET
+#### 2.2 API_SECRET
 
 - GA
 - Admin
@@ -43,19 +49,24 @@ Set up a Google Analytics 4 property (formerly known as an App + Web property) a
 - Enter Nickname
 - Record *Secret value*
 
-#### 3.2.3 CLIENT_ID
+#### 2.3 CLIENT_ID
 
 [Get your Google API client ID](https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid)
 
+### Function call example
 
-### 3.3 Install requirements
 
+Send 10 custom event hits
 ```
-pip install requirements
+event_type = 'new_custom_event'
+event_parameters = {'paramater_key_1': 'parameter_1', 'paramater_key_2': 'parameter_2'}
+
+ga = Ga4mp(measurement_id = MEASUREMENT_ID, api_secret = API_SECRET, client_id=CLIENT_ID)
+
+for _ in range(10):
+    ga.add_event(event_type, event_parameters)
+
+ga.send_hit()
 ```
 
-
-### 3.4 Run the program
-
-Run main.py
 

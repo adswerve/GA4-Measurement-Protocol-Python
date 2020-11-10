@@ -1,11 +1,4 @@
-# import time
-# import requests
-# import sys
-# import json
-# import retrying
 from ga4measurementprotocol import Ga4mp
-
-#TODO: remove not used imports?
 
 '''
 event_type and event_parameters description: https://support.google.com/analytics/answer/9267735
@@ -23,20 +16,17 @@ CLIENT_ID = '522429634784-9ir6cinsb7sk2c0t9i9dd8evreg7co1f.apps.googleuserconten
 
 if __name__ == '__main__':
 
-    # runs
     event_type = 'new_custom_event'
     event_parameters = {'cd1': 'a parameter', 'cd2': 'another parameter'}
 
-    # gives a warning
-    # event_type = 'ad_click'
-    # event_parameters ={'content_type': 'test_add_event_id'}
+    # event_type = 'sign_up'
+    # event_parameters ={'method': 'test_value'}
 
     ga = Ga4mp(measurement_id = MEASUREMENT_ID, api_secret = API_SECRET, client_id=CLIENT_ID)
 
-    for _ in range(3):
+    for _ in range(10):
         # ga.add_event(event_type + str(i+100), event_parameters)
         ga.add_event(event_type, event_parameters)
-        # time.sleep(0.01)
 
     ga.send_hit()
 

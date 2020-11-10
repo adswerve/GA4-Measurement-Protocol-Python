@@ -37,16 +37,13 @@ class Ga4mpTest(Ga4mp):
 
 
 def test_send_hit():
-    event_type = 'new_custom_event'
+    event_type = 'new_custom_event_TEST_RB'
     event_parameters = {'cd1': 'a parameter', 'cd2': 'another parameter'}
     ga = Ga4mpTest(measurement_id=MEASUREMENT_ID, api_secret=API_SECRET, client_id=CLIENT_ID)
 
     acceptable_http_status_codes = [200, 201, 204]
 
-    #TODO: remove this comment
-    # ga.add_event(event_type, event_parameters) #for some reason this is not working. Why is not working, why does it have to be inside the loop for _ in range(n)?
-
-    for _ in range(20):
+    for _ in range(7):
         ga.add_event(event_type, event_parameters)
 
     ga.send_hit()
