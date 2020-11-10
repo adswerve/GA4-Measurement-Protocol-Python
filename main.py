@@ -14,12 +14,9 @@ API_SECRET = credentials['API_SECRET']
 CLIENT_ID = credentials['CLIENT_ID']
 
 
-
-
-
 if __name__ == '__main__':
 
-    event_type = 'new_custom_event'
+    event_type = 'new_custom_event_'
     event_parameters = {'parameter_1': 'parameter_1_value', 'parameter_2': 'parameter_2_value'}
 
     ga = Ga4mp(measurement_id = MEASUREMENT_ID, api_secret = API_SECRET, client_id=CLIENT_ID)
