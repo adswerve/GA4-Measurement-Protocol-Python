@@ -53,6 +53,17 @@ Set up a Google Analytics 4 property (formerly known as an App + Web property) a
 
 [Get your Google API client ID](https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid)
 
+
+#### Credentials json
+
+Create your *credentials.json* file and put in "./credentials" subdirectory.
+
+```
+{"MEASUREMENT_ID": "<YOUR_MEASUREMENT_ID>",
+"API_SECRET": "<YOUR_API_SECRET>",
+"CLIENT_ID": "<YOUR_CLIENT_ID>"}
+```
+
 ### Function call examples
 
 #### Specity event type and parameters

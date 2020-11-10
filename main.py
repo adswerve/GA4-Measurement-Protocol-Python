@@ -1,12 +1,20 @@
+import json
+
 from ga4measurementprotocol import Ga4mp
+
 
 '''
 event_type and event_parameters description: https://support.google.com/analytics/answer/9267735
 '''
 
-MEASUREMENT_ID = '<MEASUREMENT_ID>'
-API_SECRET = '<API_SECRET>'
-CLIENT_ID = '<CLIENT_ID>'
+credentials = json.load(open("./credentials/credentials.json"))
+
+MEASUREMENT_ID = credentials['MEASUREMENT_ID']
+API_SECRET = credentials['API_SECRET']
+CLIENT_ID = credentials['CLIENT_ID']
+
+
+
 
 
 if __name__ == '__main__':
