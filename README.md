@@ -53,16 +53,20 @@ Set up a Google Analytics 4 property (formerly known as an App + Web property) a
 
 [Get your Google API client ID](https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid)
 
-### Function call example
+### Function call examples
 
-
-Send 10 custom event hits
+#### Specity event type and parameters
 ```
 event_type = 'new_custom_event'
 event_parameters = {'paramater_key_1': 'parameter_1', 'paramater_key_2': 'parameter_2'}
+```
+#### Create an instance of GA4 object
+```
+ga = Ga4mp(measurement_id = <MEASUREMENT_ID>, api_secret = <API_SECRET>, client_id=<CLIENT_ID>)
+```
 
-ga = Ga4mp(measurement_id = MEASUREMENT_ID, api_secret = API_SECRET, client_id=CLIENT_ID)
-
+#### Send 10 custom event hits
+```
 for _ in range(10):
     ga.add_event(event_type, event_parameters)
 

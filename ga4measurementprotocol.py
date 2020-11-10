@@ -29,8 +29,6 @@ class Ga4mp(object):
         for parameter in params:
             if parameter not in parameter_keys:
                 print(f"WARNING: Event parameters do not match event type.\nFor {event_type} event type, the correct parameter(s) are {params}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
-                #TODO: make it dynamic. Say which event type and parameters are expected. use f string
-                # 'ad_click' : ['ad_event_id']
 
         new_event = {'name': event_type,
                      'params': event_parameters}
@@ -53,9 +51,9 @@ class Ga4mp(object):
             body = json.dumps(request)
 
             # Send http post request
-            r = requests.post(url=url, data=body)
-            s = r.status_code
-            print(f'Batch Number: {batch_number}\nStatus code: {s}')
+            result = requests.post(url=url, data=body)
+            status_code = result.status_code
+            print(f'Batch Number: {batch_number}\nStatus code: {status_code}')
             batch_number += 1
 
         self.event_list = []
