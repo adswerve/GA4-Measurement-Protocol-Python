@@ -17,62 +17,25 @@ class Ga4mp(object):
     event_type and event_parameters description: https://support.google.com/analytics/answer/9267735
     '''
 
-    # sends event immediately
-    def auto_send(self, event_type, event_parameters, validation_hit=False):
-
-        # check for any missing or invalid parameters
-        parameter_keys = event_parameters.keys()
-        params = self.get_params(event_type) if self.get_params(event_type) is not None else []
-
-        for parameter in params:
-            if parameter not in parameter_keys:
-                print(f"WARNING: Event parameters do not match event type.\nFor {event_type} event type, the correct parameter(s) are {params}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
-
-        domain = self.base_domain
-        if validation_hit == True:
-            domain = self.validation_domain
-
-        url = f'{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
-
-        request = {'client_id': self.client_id,
-                   'events': {'name': event_type,
-                              'params': event_parameters}
-                   }
-        body = json.dumps(request)
-
-        # Send http post request
-        result = requests.post(url=url, data=body)
-        status_code = result.status_code
-        print(f'Status Code: {status_code}')
+    def send(self, events, validation_hit=False, postpone_hit=False):
 
 
-    # adds a new event to the event_list
-    def add_event(self, event_type, event_parameters):
-
-        # check for any missing or invalid parameters
-        parameter_keys = event_parameters.keys()
-        params = self.get_params(event_type) if self.get_params(event_type) is not None else []
-
-        for parameter in params:
-            if parameter not in parameter_keys:
-                print(f"WARNING: Event parameters do not match event type.\nFor {event_type} event type, the correct parameter(s) are {params}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
-
-        new_event = {'name': event_type,
-                     'params': event_parameters}
-        self.event_list.append(new_event)
+        for event in events:
+            self.event_list.append(event)
 
 
-    # sends all events added to event_list via add_event
-    def manual_send(self, validation_hit=False):
+        self.check_params(events)
 
-        domain = self.base_domain
-        if validation_hit == True:
-            domain = self.validation_domain
+        # TODO: set constant param
+
+        # TODO: null param check
 
         batched_event_list = [self.event_list[event:event + 25] for event in range(0, len(self.event_list), 25)]
         batch_number = 1
+        domain = self.base_domain
+        if validation_hit == True:
+            domain = self.validation_domain
         for batch in batched_event_list:
-
             url = f'{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
             request = {'client_id': self.client_id,
                        'events': batch
@@ -85,10 +48,9 @@ class Ga4mp(object):
             print(f'Batch Number: {batch_number}\nStatus code: {status_code}')
             batch_number += 1
 
-        self.event_list = []
 
 
-    def get_params(self, key):
+    def check_params(self, events):
 
         params_dict = {'ad_click': ['ad_event_id'],
                        'ad_exposure': ['firebase_screen', 'firebase_screen_id', 'firebase_screen_class', 'exposure_time'],
@@ -163,4 +125,14 @@ class Ga4mp(object):
                        'view_item_list': ['items', 'item_list_name', 'item_list_id'],
                        'view_promotion': ['items', 'promotion_id', 'promotion_name', 'creative_name', 'creative_slot', 'location_id']}
 
-        return params_dict.get(key)
+        # check for any missing or invalid parameters
+        for e in events:
+            event_name = e['name']
+            event_params = e['params']
+            if (event_name in params_dict.keys()):
+                for parameter in params_dict[event_name]:
+                    if parameter not in event_params.keys():
+                        print(
+                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+
+

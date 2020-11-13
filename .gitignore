@@ -41,5 +41,7 @@ Thumbs.db
 node_modules/
 # credential files
 credentials/
+# test
+test/
 #Spyder
 .spyproject

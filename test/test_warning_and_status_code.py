@@ -8,26 +8,26 @@ from ga4measurementprotocol import Ga4mp
 
 class Ga4mpTest(Ga4mp):
 
-    # when this function is called it will add a new event to the event_list
-    def add_event(self, event_type, event_parameters):
+    # # when this function is called it will add a new event to the event_list
+    # def add_event(self, event_type, event_parameters):
+    #
+    #     global give_warning, parameter, parameter_keys
+    #
+    #     # check for any missing or invalid parameters
+    #     parameter_keys = event_parameters.keys()
+    #     params = self.get_params(event_type) if self.get_params(event_type) is not None else []
+    #
+    #     for parameter in params:
+    #         if parameter not in parameter_keys:
+    #             give_warning = True
+    #             print(
+    #                 f"WARNING: Event parameters do not match event type.\nFor {event_type} event type, the correct parameter(s) are {params}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+    #
+    #     new_event = {'name': event_type,
+    #                  'params': event_parameters}
+    #     self.event_list.append(new_event)
 
-        global give_warning, parameter, parameter_keys
-
-        # check for any missing or invalid parameters
-        parameter_keys = event_parameters.keys()
-        params = self.get_params(event_type) if self.get_params(event_type) is not None else []
-
-        for parameter in params:
-            if parameter not in parameter_keys:
-                give_warning = True
-                print(
-                    f"WARNING: Event parameters do not match event type.\nFor {event_type} event type, the correct parameter(s) are {params}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
-
-        new_event = {'name': event_type,
-                     'params': event_parameters}
-        self.event_list.append(new_event)
-
-    def send_hit(self, validation_hit=False):
+    def send(self, validation_hit=False):
 
         global status_code
 
