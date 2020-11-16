@@ -2,7 +2,6 @@
 import requests
 import json
 
-
 class Ga4mp(object):
 
     def __init__(self, measurement_id, api_secret, client_id):
@@ -13,33 +12,46 @@ class Ga4mp(object):
         self.base_domain = 'https://www.google-analytics.com/mp/collect'
         self.validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
 
-    '''
-    event_type and event_parameters description: https://support.google.com/analytics/answer/9267735
-    '''
 
-    def send(self, events, validation_hit=False, postpone_hit=False):
+    def send(self, events, validation_hit=False, postpone=False):
 
-
-        for event in events:
-            self.event_list.append(event)
-
-
+        # check for any missing or invalid parameters among automatically collected and recommended event types
         self.check_params(events)
 
-        # TODO: set constant param
+        if postpone == True:
+            # build event list to send later
+            for event in events:
+                self.event_list.append(event)
+        else:
+            # batch events into sets of 25 events
+            batched_event_list = [events[event:event + 25] for event in range(0, len(events), 25)]
+            # send http post request
+            self.http_post(batched_event_list, validation_hit=validation_hit)
 
-        # TODO: null param check
 
+    def postponed_send(self):
+
+        # batch events into sets of 25 events
         batched_event_list = [self.event_list[event:event + 25] for event in range(0, len(self.event_list), 25)]
-        batch_number = 1
+        self.http_post(batched_event_list)
+
+        # clear event_list for future use
+        self.event_list = []
+
+
+    def http_post(self, batched_event_list, validation_hit=False):
+
+        # set domain
         domain = self.base_domain
         if validation_hit == True:
             domain = self.validation_domain
+
+        # loop through events in batches of 25
+        batch_number = 1
         for batch in batched_event_list:
             url = f'{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
             request = {'client_id': self.client_id,
-                       'events': batch
-                       }
+                       'events': batch}
             body = json.dumps(request)
 
             # Send http post request
@@ -49,9 +61,9 @@ class Ga4mp(object):
             batch_number += 1
 
 
-
     def check_params(self, events):
 
+        # all automatically collected and recommended event types
         params_dict = {'ad_click': ['ad_event_id'],
                        'ad_exposure': ['firebase_screen', 'firebase_screen_id', 'firebase_screen_class', 'exposure_time'],
                        'ad_impression': ['ad_event_id'],
@@ -132,7 +144,6 @@ class Ga4mp(object):
             if (event_name in params_dict.keys()):
                 for parameter in params_dict[event_name]:
                     if parameter not in event_params.keys():
-                        print(
-                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+                        print(f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
 
 

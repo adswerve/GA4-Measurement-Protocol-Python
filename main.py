@@ -19,8 +19,13 @@ if __name__ == '__main__':
     event_type = 'stuff'
     event_parameters = {'parameter_1': 'parameter_1_value', 'parameter_2': 'parameter_2_value'}
 
-    event = { 'name' : event_type, 'params': event_parameters}
-    events = [event, event, event,event, event, event,event, event, event,event, event, event,event, event, event,event, event, event,event, event, event,event, event, event, event, event]
+    event = {'name': event_type, 'params': event_parameters}
+    events = [event, event, event, event, event,
+              event, event, event, event, event,
+              event, event, event, event, event,
+              event, event, event, event, event,
+              event, event, event, event, event,
+              event]
 
     ga = Ga4mp(measurement_id = MEASUREMENT_ID, api_secret = API_SECRET, client_id=CLIENT_ID)
 

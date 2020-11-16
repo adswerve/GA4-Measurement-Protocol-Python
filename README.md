@@ -32,8 +32,8 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
 
 ``` json 
 {"MEASUREMENT_ID": "<YOUR_MEASUREMENT_ID>",
-"API_SECRET": "<YOUR_API_SECRET>",
-"CLIENT_ID": "<YOUR_CLIENT_ID>"}
+ "API_SECRET": "<YOUR_API_SECRET>",
+ "CLIENT_ID": "<YOUR_CLIENT_ID>"}
 ```
 The following represents a simple example of a custom event sent to GA4:
 ``` python 
@@ -45,25 +45,27 @@ ga = Ga4mp(measurement_id = <MEASUREMENT_ID>, api_secret = <API_SECRET>, client_
 # Specify event type and parameters
 event_type = 'new_custom_event'
 event_parameters = {'paramater_key_1': 'parameter_1', 'paramater_key_2': 'parameter_2'}
-event = { 'name' : event_type, 'params' : event_parameters }
+event = {'name': event_type, 'params': event_parameters }
 events = [event]
 
 """
-events need to be passed as a list of dictionaries, fitting the format:
-[  {'name' : 'event_name', 
-    'params' : { 'param1' : 'stuff',
-                 'param2' : 'things'}
-    },
-    {'name' : 'event_name',
-    'params' : { 'param1' : 'stuff',
-                 'param2' : 'things'}
-    }
-]
+Events need to be passed as a list of dictionaries, fitting the format:
+[{'name': 'event_name', 
+  'params' : {'param1': 'stuff',
+              'param2': 'things'}
+ },
+ {'name': 'event_name',
+  'params': {'param1': 'stuff',
+             'param2': 'things'}
+ }]
 """
 
+# Send a custom event to GA4 immediately
+ga.send(events, postpone=False)
 
-# Send a custom event to GA4
-ga.send(events)
+# Postponed send of a custom event to GA4
+ga.send(events, postpone=True)
+ga.postponed_send()
 ```
 
 ## Liscense
