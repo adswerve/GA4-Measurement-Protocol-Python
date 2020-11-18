@@ -1,0 +1,12 @@
+DESCRIPTION.rst
+MANIFEST.in
+README.md
+setup.py
+ga4mp/__init__.py
+ga4mp/ga4mp.py
+ga4mp.egg-info/PKG-INFO
+ga4mp.egg-info/SOURCES.txt
+ga4mp.egg-info/dependency_links.txt
+ga4mp.egg-info/top_level.txt
+ga4mp.egg-info/zip-safe
+test/test_warning_and_status_code.py

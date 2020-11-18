@@ -14,7 +14,7 @@ Email: `analytics-help@adswerve.com`
 
 The easiest way to install GA4 Measurement Protocol Support for Python is directly from PyPi using `pip` by running the following command:
 
-`pip install ...`
+`pip install ga4mp`
 
 
 ## Usage
@@ -30,13 +30,13 @@ The required credentials for sending events to GA4 are made up by the following:
 
 Create your *credentials.json* file and put in your "./credentials" subdirectory.
 
-``` json 
+``` json
 {"MEASUREMENT_ID": "<YOUR_MEASUREMENT_ID>",
  "API_SECRET": "<YOUR_API_SECRET>",
  "CLIENT_ID": "<YOUR_CLIENT_ID>"}
 ```
 The following represents a simple example of a custom event sent to GA4:
-``` python 
+``` python
 from ga4measurementprotocol import Ga4mp
 
 # Create an instance of GA4 object
@@ -50,18 +50,18 @@ events = [event]
 
 """
 Events need to be passed as a list of dictionaries, fitting the format:
-[{'name': 'event_name', 
-  'params' : {'param1': 'stuff',
-              'param2': 'things'}
+[{'name': 'level_end',
+  'params' : {'level_name': 'First',
+              'success': 'True'}
  },
- {'name': 'event_name',
-  'params': {'param1': 'stuff',
-             'param2': 'things'}
+ {'name': 'level_up',
+  'params': {'character': 'John Madden',
+             'level': 'First'}
  }]
 """
 
 # Send a custom event to GA4 immediately
-ga.send(events, postpone=False)
+ga.send(events)
 
 # Postponed send of a custom event to GA4
 ga.send(events, postpone=True)
