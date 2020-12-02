@@ -70,4 +70,4 @@ ga.postponed_send()
 
 ## Liscense
 
-GA4 Measurement Protocol Support for Python is licensed under the [BSD License](./LICENSE)
+GA4 Measurement Protocol Support for Python is licensed under the [BSD License](./LICENSE).
