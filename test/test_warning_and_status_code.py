@@ -3,7 +3,7 @@ import json
 import random
 
 from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
-from ga4measurementprotocol import Ga4mp
+from ga4mp import Ga4mp
 
 
 class Ga4mpTest(Ga4mp):
