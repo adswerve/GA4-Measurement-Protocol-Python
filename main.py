@@ -1,6 +1,6 @@
 import json
 
-from ga4measurementprotocol import Ga4mp
+from ga4mp import Ga4mp
 
 
 '''
