@@ -17,7 +17,7 @@ class Ga4mp(object):
         self.api_secret = api_secret
         self.client_id = client_id
         self._event_list = []
-        self.base_domain = 'https://www.google-analytics.com/mp/collect'
+        self._base_domain = 'https://www.google-analytics.com/mp/collect'
         self.validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
 
 
@@ -50,7 +50,7 @@ class Ga4mp(object):
     def _http_post(self, batched_event_list, validation_hit=False):
 
         # set domain
-        domain = self.base_domain
+        domain = self._base_domain
         if validation_hit == True:
             domain = self.validation_domain
 
