@@ -34,20 +34,20 @@ class Ga4mp(object):
             # batch events into sets of 25 events
             batched_event_list = [events[event:event + 25] for event in range(0, len(events), 25)]
             # send http post request
-            self.http_post(batched_event_list, validation_hit=validation_hit)
+            self._http_post(batched_event_list, validation_hit=validation_hit)
 
 
     def postponed_send(self):
 
         # batch events into sets of 25 events
         batched_event_list = [self.event_list[event:event + 25] for event in range(0, len(self.event_list), 25)]
-        self.http_post(batched_event_list)
+        self._http_post(batched_event_list)
 
         # clear event_list for future use
         self.event_list = []
 
 
-    def http_post(self, batched_event_list, validation_hit=False):
+    def _http_post(self, batched_event_list, validation_hit=False):
 
         # set domain
         domain = self.base_domain
