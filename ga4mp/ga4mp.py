@@ -16,7 +16,7 @@ class Ga4mp(object):
         self.measurement_id = measurement_id
         self.api_secret = api_secret
         self.client_id = client_id
-        self.event_list = []
+        self._event_list = []
         self.base_domain = 'https://www.google-analytics.com/mp/collect'
         self.validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
 
@@ -24,12 +24,12 @@ class Ga4mp(object):
     def send(self, events, validation_hit=False, postpone=False):
 
         # check for any missing or invalid parameters among automatically collected and recommended event types
-        self.check_params(events)
+        self._check_params(events)
 
         if postpone == True:
             # build event list to send later
             for event in events:
-                self.event_list.append(event)
+                self._event_list.append(event)
         else:
             # batch events into sets of 25 events
             batched_event_list = [events[event:event + 25] for event in range(0, len(events), 25)]
@@ -40,11 +40,11 @@ class Ga4mp(object):
     def postponed_send(self):
 
         # batch events into sets of 25 events
-        batched_event_list = [self.event_list[event:event + 25] for event in range(0, len(self.event_list), 25)]
+        batched_event_list = [self._event_list[event:event + 25] for event in range(0, len(self._event_list), 25)]
         self._http_post(batched_event_list)
 
         # clear event_list for future use
-        self.event_list = []
+        self._event_list = []
 
 
     def _http_post(self, batched_event_list, validation_hit=False):
@@ -69,7 +69,7 @@ class Ga4mp(object):
             batch_number += 1
 
 
-    def check_params(self, events):
+    def _check_params(self, events):
 
         # all automatically collected and recommended event types
         params_dict = {'ad_click': ['ad_event_id'],
