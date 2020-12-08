@@ -18,7 +18,7 @@ class Ga4mp(object):
         self.client_id = client_id
         self._event_list = []
         self._base_domain = 'https://www.google-analytics.com/mp/collect'
-        self.validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
+        self._validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
 
 
     def send(self, events, validation_hit=False, postpone=False):
@@ -52,7 +52,7 @@ class Ga4mp(object):
         # set domain
         domain = self._base_domain
         if validation_hit == True:
-            domain = self.validation_domain
+            domain = self._validation_domain
 
         # loop through events in batches of 25
         batch_number = 1
