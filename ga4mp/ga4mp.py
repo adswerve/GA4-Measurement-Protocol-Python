@@ -53,9 +53,9 @@ class Ga4mp(object):
         self.measurement_id = measurement_id
         self.api_secret = api_secret
         self.client_id = client_id
-        self.event_list = []
-        self.base_domain = 'https://www.google-analytics.com/mp/collect'
-        self.validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
+        self._event_list = []
+        self._base_domain = 'https://www.google-analytics.com/mp/collect'
+        self._validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
 
 
     def send(self, events, validation_hit=False, postpone=False):
@@ -84,17 +84,17 @@ class Ga4mp(object):
         """
 
         # check for any missing or invalid parameters among automatically collected and recommended event types
-        self.check_params(events)
+        self._check_params(events)
 
         if postpone == True:
             # build event list to send later
             for event in events:
-                self.event_list.append(event)
+                self._event_list.append(event)
         else:
             # batch events into sets of 25 events, the maximum allowed.
             batched_event_list = [events[event:event + 25] for event in range(0, len(events), 25)]
             # send http post request
-            self.http_post(batched_event_list, validation_hit=validation_hit)
+            self._http_post(batched_event_list, validation_hit=validation_hit)
 
 
     def postponed_send(self):
@@ -102,15 +102,17 @@ class Ga4mp(object):
         Method to send the events provided to Ga4mp.send(events,postpone=True) 
         """
 
-        # batch events into sets of 25 events, the maximum allowed.
-        batched_event_list = [self.event_list[event:event + 25] for event in range(0, len(self.event_list), 25)]
-        self.http_post(batched_event_list)
+        # batch events into sets of 25 events
+        batched_event_list = [self._event_list[event:event + 25] for event in range(0, len(self._event_list), 25)]
+        self._http_post(batched_event_list)
+
 
         # clear event_list for future use
-        self.event_list = []
+        self._event_list = []
 
 
-    def http_post(self, batched_event_list, validation_hit=False):
+
+    def _http_post(self, batched_event_list, validation_hit=False):
         """
         Method to send http POST request to google-analytics.
 
@@ -122,10 +124,11 @@ class Ga4mp(object):
             Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False
         """
 
+
         # set domain
-        domain = self.base_domain
+        domain = self._base_domain
         if validation_hit == True:
-            domain = self.validation_domain
+            domain = self._validation_domain
 
         # loop through events in batches of 25
         batch_number = 1
@@ -142,7 +145,9 @@ class Ga4mp(object):
             batch_number += 1
 
 
-    def check_params(self, events):
+
+    def _check_params(self, events):
+
         """
         Method to check whether the event payload parameters provided meets supported parameters.
 
@@ -161,6 +166,7 @@ class Ga4mp(object):
                         'level': 'First'}
             }]
         """
+
 
         # all automatically collected and recommended event types
         params_dict = {'ad_click': ['ad_event_id'],
