@@ -69,7 +69,7 @@ ga.postponed_send()
 ```
 
 ## How to contruct Events
-For more information on constructing events, please reviw the [https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference](GA4 Measurement Protocol reference).
+For more information on constructing events, please reviw the [GA4 Measurement Protocol reference](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference).
 
 ## License
 
