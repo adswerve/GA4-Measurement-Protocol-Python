@@ -68,6 +68,9 @@ ga.send(events, postpone=True)
 ga.postponed_send()
 ```
 
-## Liscense
+## How to contruct Events
+For more information on constructing events, please reviw the [https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference GA4 Measurement Protocol reference].
+
+## License
 
 GA4 Measurement Protocol Support for Python is licensed under the [BSD License](./LICENSE).
