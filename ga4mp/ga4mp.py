@@ -12,6 +12,7 @@ import json
 
 from ga4mp.utils import params_dict
 
+
 class Ga4mp(object):
     """
     Class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.
@@ -59,7 +60,6 @@ class Ga4mp(object):
         self._base_domain = 'https://www.google-analytics.com/mp/collect'
         self._validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
 
-
     def send(self, events, validation_hit=False, postpone=False):
         """
         Method to send an http post request to google analytics with the specified events.
@@ -98,7 +98,6 @@ class Ga4mp(object):
             # send http post request
             self._http_post(batched_event_list, validation_hit=validation_hit)
 
-
     def postponed_send(self):
         """
         Method to send the events provided to Ga4mp.send(events,postpone=True) 
@@ -108,10 +107,24 @@ class Ga4mp(object):
         batched_event_list = [self._event_list[event:event + 25] for event in range(0, len(self._event_list), 25)]
         self._http_post(batched_event_list)
 
-
         # clear event_list for future use
         self._event_list = []
 
+    def append_event_to_params_dict(self, new_name_and_parameters):
+
+        """
+        Method to append event name and parameters key-value pair to parameters dictionary.
+
+        Parameters
+        ----------
+        new_name_and_parameters : Dict
+            A dictionary with one key-value pair representing a new type of event to be sent to Google Analytics.
+            The dictionary should adhere to the following format:
+
+            {'new_name': ['new_param_1', 'new_param_2', 'new_param_3']}
+        """
+
+        params_dict.update(new_name_and_parameters)
 
     def _http_post(self, batched_event_list, validation_hit=False):
         """
@@ -124,7 +137,6 @@ class Ga4mp(object):
         validation_hit : bool, optional
             Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False
         """
-
 
         # set domain
         domain = self._base_domain
@@ -144,8 +156,6 @@ class Ga4mp(object):
             status_code = result.status_code
             print(f'Batch Number: {batch_number}\nStatus code: {status_code}')
             batch_number += 1
-
-
 
     def _check_params(self, events):
 
@@ -167,7 +177,6 @@ class Ga4mp(object):
                         'level': 'First'}
             }]
         """
-
 
         # check for any missing or invalid parameters
         for e in events:

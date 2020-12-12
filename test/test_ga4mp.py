@@ -1,9 +1,12 @@
-
 import requests
 import json
+import copy
+
 
 from ga4mp import Ga4mp
+from ga4mp.utils import params_dict
 from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
+
 
 class Ga4mpTest(Ga4mp):
 
@@ -19,7 +22,7 @@ class Ga4mpTest(Ga4mp):
             Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False
         """
 
-        # this is the change from the parent class. We need this var to be global for http code unit test
+        # this is a change from the parent class method. We need this var to be global for http code unit test
         global status_code
 
         # set domain
@@ -32,7 +35,7 @@ class Ga4mpTest(Ga4mp):
         for batch in batched_event_list:
             url = f'{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
 
-            # this is another change from parent. We test a wrong url to fail http code unit test
+            # this is another change from parent class method. We test a wrong url to fail http code unit test
             # this url will result in http code 404 and will fail the test_http_status_code()
             # url = f'{domain}testAddURLPartToBreakProgram?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
 
@@ -45,6 +48,7 @@ class Ga4mpTest(Ga4mp):
             status_code = result.status_code
             print(f'Batch Number: {batch_number}\nStatus code: {status_code}')
             batch_number += 1
+
 
 def test_http_status_code():
 
@@ -63,3 +67,11 @@ def test_http_status_code():
     acceptable_http_status_codes = [200, 201, 204]
 
     assert status_code in acceptable_http_status_codes
+
+
+def test_append_event_to_params_dict():
+
+    params_dict_test = copy.deepcopy(params_dict)
+    params_dict_test.update({'new_name': ['new_param_1', 'new_param_2', 'new_param_3']})
+
+    assert params_dict_test['new_name']
