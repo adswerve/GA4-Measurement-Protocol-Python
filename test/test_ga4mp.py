@@ -2,7 +2,6 @@ import requests
 import json
 import copy
 
-
 from ga4mp import Ga4mp
 from ga4mp.utils import params_dict
 from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
