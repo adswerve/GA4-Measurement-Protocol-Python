@@ -19,7 +19,7 @@ class Ga4mpTest(Ga4mp):
             Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False
         """
 
-        # this is the change from the parent class. We need this var to be global for validation/testing
+        # this is the change from the parent class. We need this var to be global for http code unit test
         global status_code
 
         # set domain
@@ -32,7 +32,8 @@ class Ga4mpTest(Ga4mp):
         for batch in batched_event_list:
             url = f'{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
 
-            # this will return code 404 and will fail the test_http_status_code()
+            # this is another change from parent. We test a wrong url to fail http code unit test
+            # this url will result in http code 404 and will fail the test_http_status_code()
             # url = f'{domain}testAddURLPartToBreakProgram?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
 
             request = {'client_id': self.client_id,
@@ -51,17 +52,13 @@ def test_http_status_code():
     ga = Ga4mpTest(measurement_id = MEASUREMENT_ID, api_secret = API_SECRET, client_id=CLIENT_ID)
 
     # Specify event type and parameters
-    event_type = 'new_custom_event_meow'
+    event_type = 'new_custom_event'
     event_parameters = {'paramater_key_1': 'parameter_1', 'paramater_key_2': 'parameter_2'}
     event = {'name': event_type, 'params': event_parameters }
     events = [event]
 
     # Send a custom event to GA4 immediately
     ga.send(events)
-
-    # Postponed send of a custom event to GA4
-    # ga.send(events, postpone=True)
-    # ga.postponed_send()
 
     acceptable_http_status_codes = [200, 201, 204]
 
