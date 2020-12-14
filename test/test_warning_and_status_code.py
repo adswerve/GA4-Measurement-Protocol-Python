@@ -4,6 +4,10 @@ import random
 
 from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
 from ga4mp import Ga4mp
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Ga4mpTest(Ga4mp):
@@ -20,7 +24,7 @@ class Ga4mpTest(Ga4mp):
     #     for parameter in params:
     #         if parameter not in parameter_keys:
     #             give_warning = True
-    #             print(
+    #             logger.warning(
     #                 f"WARNING: Event parameters do not match event type.\nFor {event_type} event type, the correct parameter(s) are {params}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
     #
     #     new_event = {'name': event_type,
@@ -34,6 +38,7 @@ class Ga4mpTest(Ga4mp):
         domain = self.base_domain
         if validation_hit == True:
             domain = self.validation_domain
+        logger.info(f"Sending POST to: {domain}")
 
         batched_event_list = [self.event_list[event:event + 25] for event in range(0, len(self.event_list), 25)]
         batch_number = 1
@@ -50,7 +55,8 @@ class Ga4mpTest(Ga4mp):
             # Send http post request
             result = requests.post(url=url, data=body)
             status_code = result.status_code
-            print(f'Batch Number: {batch_number}\nStatus code: {status_code}')
+            logger.info(f'Batch Number: {batch_number}')
+            logger.info(f'Status code: {status_code}')
             batch_number += 1
 
         self.event_list = []
@@ -92,7 +98,7 @@ def test_send_hit():
         # ga.add_event(event_type + str(i+number_of_events), event_parameters) # to give each event a unique name
         ga.add_event(event_type, event_parameters)
 
-    print(f"Sending {number_of_events} hits of {event_type} event with with parameters {event_parameters}")
+    logger.info(f"Sending {number_of_events} hits of {event_type} event with with parameters {event_parameters}")
 
     ga.send_hit()
 
