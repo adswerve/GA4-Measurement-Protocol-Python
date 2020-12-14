@@ -24,7 +24,7 @@ The required credentials for sending events to GA4 are made up by the following:
 | Credential     | Description                                                                                                                                                                                               |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | measurement_id | The identifier for a Data Stream. Found in the Google Analytics UI under:  **Admin** > **Data Streams** > **choose your stream** > **Measurement ID**                                                     |
-| api_secret     | Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: **Admin** > **Data Streams** > **choose your stream** > **Measurement Protocol** > **Create** |
+| api_secret     | Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: **Admin** > **Data Streams** > **choose your stream** > **Measurement Protocol API secrets** > **Create** |
 | client_id      | [Get your Google API client ID](https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid)                                                                                        |
 
 
@@ -68,6 +68,9 @@ ga.send(events, postpone=True)
 ga.postponed_send()
 ```
 
-## Liscense
+## How to contruct Events
+For more information on constructing events, please reviw the [GA4 Measurement Protocol reference](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference).
+
+## License
 
 GA4 Measurement Protocol Support for Python is licensed under the [BSD License](./LICENSE).
