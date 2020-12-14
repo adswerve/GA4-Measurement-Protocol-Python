@@ -9,6 +9,11 @@
 
 import requests
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 class Ga4mp(object):
     """
@@ -48,8 +53,6 @@ class Ga4mp(object):
     """
 
     def __init__(self, measurement_id, api_secret, client_id):
-        """
-        """
         self.measurement_id = measurement_id
         self.api_secret = api_secret
         self.client_id = client_id
@@ -104,8 +107,8 @@ class Ga4mp(object):
 
         # batch events into sets of 25 events
         batched_event_list = [self._event_list[event:event + 25] for event in range(0, len(self._event_list), 25)]
-        self._http_post(batched_event_list)
 
+        self._http_post(batched_event_list)
 
         # clear event_list for future use
         self._event_list = []
@@ -129,6 +132,7 @@ class Ga4mp(object):
         domain = self._base_domain
         if validation_hit == True:
             domain = self._validation_domain
+        logger.info(f"Sending POST to: {domain}")
 
         # loop through events in batches of 25
         batch_number = 1
@@ -141,7 +145,8 @@ class Ga4mp(object):
             # Send http post request
             result = requests.post(url=url, data=body)
             status_code = result.status_code
-            print(f'Batch Number: {batch_number}\nStatus code: {status_code}')
+            logger.info(f'Batch Number: {batch_number}')
+            logger.info(f'Status code: {status_code}')
             batch_number += 1
 
 
@@ -249,4 +254,4 @@ class Ga4mp(object):
             if (event_name in params_dict.keys()):
                 for parameter in params_dict[event_name]:
                     if parameter not in event_params.keys():
-                        print(f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+                        logger.warning(f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
