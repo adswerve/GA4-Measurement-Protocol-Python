@@ -6,8 +6,10 @@ import unittest
 from ga4mp import Ga4mp
 from ga4mp.utils import params_dict
 from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
+import logging
 
-
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger(__name__)
 class Ga4mpTest(Ga4mp):
     def _http_post(self, batched_event_list, validation_hit=False):
         """
@@ -44,7 +46,10 @@ class Ga4mpTest(Ga4mp):
             # Send http post request
             result = requests.post(url=url, data=body)
             status_code = result.status_code
-            print(f"Batch Number: {batch_number}\nStatus code: {status_code}")
+
+            logger.info(f'Batch Number: {batch_number}')
+            logger.info(f'Status code: {status_code}')
+
             batch_number += 1
 
 

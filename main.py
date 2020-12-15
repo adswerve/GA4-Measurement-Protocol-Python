@@ -7,7 +7,7 @@ from ga4mp import Ga4mp
 event_type and event_parameters description: https://support.google.com/analytics/answer/9267735
 '''
 
-credentials = json.load(open("../credentials/credentials.json"))
+credentials = json.load(open("./credentials/credentials.json"))
 
 MEASUREMENT_ID = credentials['MEASUREMENT_ID']
 API_SECRET = credentials['API_SECRET']
