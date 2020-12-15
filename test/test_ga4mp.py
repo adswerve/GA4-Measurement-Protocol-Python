@@ -9,7 +9,9 @@ from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
-logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
+
 class Ga4mpTest(Ga4mp):
     def _http_post(self, batched_event_list, validation_hit=False):
         """
