@@ -163,6 +163,8 @@ class Ga4mp(object):
             logger.info(f'Status code: {status_code}')
             batch_number += 1
 
+        return status_code
+
     def _check_params(self, events):
 
         """
