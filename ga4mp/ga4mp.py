@@ -61,6 +61,7 @@ class Ga4mp(object):
         self.api_secret = api_secret
         self.client_id = client_id
         self._event_list = []
+        self._user_properties = {}
         self._base_domain = 'https://www.google-analytics.com/mp/collect'
         self._validation_domain = 'https://www.google-analytics.com/debug/mp/collect'
 
@@ -155,7 +156,10 @@ class Ga4mp(object):
         batch_number = 1
         for batch in batched_event_list:
             url = f'{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}'
-            request = {'client_id': self.client_id}
+            request = {'client_id': self.client_id,
+                       'events': batch}
+            self._add_user_props_to_hit(request)
+
             #make adjustments for postponed hit
             request['events'] = { 'name' : batch['name'], 'params' : batch['params'] } if(postpone) else batch
             if(postpone):
@@ -202,6 +206,54 @@ class Ga4mp(object):
                 for parameter in params_dict[event_name]:
                     if parameter not in event_params.keys():
                         logger.warning(f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+
+    def set_user_property(self, property, value):
+
+        """
+        Method to set user_id, user_properties, non_personalized_ads
+
+        Parameters
+        ----------
+        property : string
+        value: dependent on property (user_id, user_properties - string, non_personalized_ads - bool)
+        """
+        self._user_properties.update({ property : value })
+
+
+    def delete_user_property(self, property):
+
+        """
+        Method to remove user_id, user_properties, non_personalized_ads
+
+        Parameters
+        ----------
+        property : string
+        """
+        try:
+            if property in self._user_properties.keys():
+                self._user_properties.pop(property)
+        except:
+            logger.info(f"Failed to delete user property: {property}")
+
+    def _add_user_props_to_hit(self, hit):
+
+        """
+        Method is a helper function to add user properties to outgoing hits.
+
+        Parameters
+        ----------
+        hit : dict
+        """
+        for key in self._user_properties:
+            try:
+                if key in ['user_id', 'non_personalized_ads']:
+                    hit.update({ key : self._user_properties[key]})
+                else:
+                    if 'user_properties' not in hit.keys():
+                        hit.update({'user_properties' : {} })
+                    hit['user_properties'].update({ key : { "value" : self._user_properties[key]}})
+            except:
+                logger.info(f"Failed to add user property to outgoing hit: {key}")
 
     def _get_timestamp(self):
         """

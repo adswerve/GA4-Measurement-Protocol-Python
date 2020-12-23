@@ -60,6 +60,14 @@ Events need to be passed as a list of dictionaries, fitting the format:
  }]
 """
 
+# Set persistent user properties
+#   Includes user_id, non_personalized_ads, and all else set as custom user_properties
+ga.set_user_property('user_id', 'Thales2000')
+ga.set_user_property('customer_tier','enterprise')
+
+# Remove a user property
+ga.delete_user_property('user_id')
+
 # Send a custom event to GA4 immediately
 ga.send(events)
 
@@ -68,8 +76,11 @@ ga.send(events, postpone=True)
 ga.postponed_send()
 ```
 
-## How to contruct Events
-For more information on constructing events, please reviw the [GA4 Measurement Protocol reference](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference).
+## How to construct Events
+For more information on constructing events, please review the [GA4 Measurement Protocol reference](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference).
+
+## User properties
+For more information on what user properties are in GA4 and what you can do with them, [please review here](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties?client_type=gtag)
 
 ## License
 
