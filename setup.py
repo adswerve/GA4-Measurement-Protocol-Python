@@ -24,7 +24,7 @@ setup(
     license = 'BSD',
     packages = ["ga4mp"],
 
-    install_requires = ['requests >=2.0.0,<= 2.25.0'],
+    install_requires = [],
 
     zip_safe = True,
 )
