@@ -7,16 +7,14 @@
 # assistance in strategy, implementation, or auditing existing work.
 ###############################################################################
 
-import requests
 import json
 import logging
+import urllib.request
 from time import time
+from ga4mp.utils import params_dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-from ga4mp.utils import params_dict
 
 
 class Ga4mp(object):
@@ -165,12 +163,15 @@ class Ga4mp(object):
             if(postpone):
                 #add timestamp to hit
                 request['timestamp_micros'] = batch['_timestamp_micros']
+            
+            req = urllib.request.Request(url)
+            req.add_header('Content-Type', 'application/json; charset=utf-8')
+            jsondata = json.dumps(request)
+            json_data_as_bytes = jsondata.encode('utf-8')   # needs to be bytes
+            req.add_header('Content-Length', len(json_data_as_bytes))
+            result = urllib.request.urlopen(req, json_data_as_bytes)
 
-            body = json.dumps(request)
-
-            # Send http post request
-            result = requests.post(url=url, data=body)
-            status_code = result.status_code
+            status_code = result.status
             logger.info(f'Batch Number: {batch_number}')
             logger.info(f'Status code: {status_code}')
             batch_number += 1
