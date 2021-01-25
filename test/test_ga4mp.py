@@ -11,6 +11,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+from testfixtures import log_capture
 
 
 class Ga4mpTestMethods(unittest.TestCase):
@@ -70,16 +71,35 @@ class Ga4mpTestMethods(unittest.TestCase):
         with pytest.raises(AssertionError, match="each event should have a name key"):
             Ga4mp._check_params(self, events_incorrect_key)
 
+    @log_capture()
+    def test_check_params_5_no_warning(self, capture):
 
-    def test_check_params_5_warning(self):
+        events_correct_no_warning = [{'name': 'level_end',
+                                      'params': {'level_name': 'First',
+                                                 'success': 'True'}
+                                      }]
+
+        Ga4mp._check_params(self, events_correct_no_warning)
+
+        logger.info('input validated')
+
+        expected_log = ('test_ga4mp', 'INFO', "input validated")
+
+        capture.check(expected_log,)
+
+    @log_capture()
+    def test_check_params_6_warning(self, capture):
 
         events_should_get_warning = [{'name': 'level_end',
                                       'params' : {'level_name': 'First',
                                                   'incorrect_key': 'True'}
                                      }]
 
-
         Ga4mp._check_params(self, events_should_get_warning)
+
+        expected_log = ('ga4mp.ga4mp','WARNING', "WARNING: Event parameters do not match event type.\nFor level_end event type, the correct parameter(s) are ['level_name', 'success'].\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+
+        capture.check(expected_log,)
 
     def test_http_status_code(self):
 
@@ -89,7 +109,7 @@ class Ga4mpTestMethods(unittest.TestCase):
         )
 
         # Specify event type and parameters
-        event_type = "new_custom_event"
+        event_type = "new_custom_event_RB"
         event_parameters = {
             "paramater_key_1": "parameter_1",
             "paramater_key_2": "parameter_2",
@@ -98,9 +118,6 @@ class Ga4mpTestMethods(unittest.TestCase):
         events = [event]
         batched_event_list = [events[event:event + 25] for event in range(0, len(events), 25)]
         status_code = ga._http_post(batched_event_list)
-
-        # Send a custom event to GA4 immediately
-        # ga.send(events)
 
         acceptable_http_status_codes = [200, 201, 204]
 
