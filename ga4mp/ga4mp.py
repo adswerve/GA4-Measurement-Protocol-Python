@@ -199,7 +199,20 @@ class Ga4mp(object):
             }]
         """
 
+        # check to make sure it's a list of dictionaries with the right keys
+
+        assert type(events) == list, "events should be a list"
+
+        for event in events:
+
+            assert type(event) == dict, "each event should be a dictionary"
+
+            assert "name" in event, 'each event should have a "name" key'
+
+            assert "params" in event, 'each event should have a "params" key'
+
         # check for any missing or invalid parameters
+
         for e in events:
             event_name = e['name']
             event_params = e['params']
