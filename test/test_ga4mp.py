@@ -58,7 +58,7 @@ class Ga4mpTestMethods(unittest.TestCase):
 
     def test_check_params_4_events_incorrect_key(self):
 
-        events_incorrect_key = [{'incorrect_key': 'level_end',
+        events_incorrect_key = [{'incorrect_key_causes_error': 'level_end',
                                  'params': {'level_name': 'First',
                                             'success': 'True'}
                                  },
@@ -67,7 +67,7 @@ class Ga4mpTestMethods(unittest.TestCase):
                                             'level': 'First'}
                                  }]
 
-        with pytest.raises(AssertionError, match="each event should have a name key"):
+        with pytest.raises(AssertionError, match='each event should have a "name" key'):
             Ga4mp._check_params(self, events_incorrect_key)
 
     @log_capture()
@@ -91,7 +91,7 @@ class Ga4mpTestMethods(unittest.TestCase):
 
         events_should_get_warning = [{'name': 'level_end',
                                       'params' : {'level_name': 'First',
-                                                  'incorrect_key': 'True'}
+                                                  'incorrect_key_causes_warning': 'True'}
                                      }]
 
         Ga4mp._check_params(self, events_should_get_warning)
@@ -108,7 +108,7 @@ class Ga4mpTestMethods(unittest.TestCase):
         )
 
         # Specify event type and parameters
-        event_type = "new_custom_event_RB"
+        event_type = "new_custom_event"
         event_parameters = {
             "parameter_key_1": "parameter_1",
             "parameter_key_2": "parameter_2",
