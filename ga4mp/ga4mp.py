@@ -10,6 +10,7 @@
 import requests
 import json
 import logging
+from time import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -95,6 +96,8 @@ class Ga4mp(object):
         if postpone == True:
             # build event list to send later
             for event in events:
+                event['_timestamp_micros'] = self._get_timestamp()
+
                 self._event_list.append(event)
         else:
             # batch events into sets of 25 events, the maximum allowed.
@@ -107,10 +110,8 @@ class Ga4mp(object):
         Method to send the events provided to Ga4mp.send(events,postpone=True)
         """
 
-        # batch events into sets of 25 events
-        batched_event_list = [self._event_list[event:event + 25] for event in range(0, len(self._event_list), 25)]
-
-        self._http_post(batched_event_list)
+        for event in self._event_list:
+            self._http_post([event], postpone=True)
 
         # clear event_list for future use
         self._event_list = []
@@ -131,7 +132,7 @@ class Ga4mp(object):
 
         params_dict.update(new_name_and_parameters)
 
-    def _http_post(self, batched_event_list, validation_hit=False):
+    def _http_post(self, batched_event_list, validation_hit=False, postpone=False):
         """
         Method to send http POST request to google-analytics.
 
@@ -141,6 +142,8 @@ class Ga4mp(object):
             List of List of events. Places initial event payload into a list to send http POST in batches.
         validation_hit : bool, optional
             Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False
+        validation_hit : bool, optional
+            Boolean to determine whether to include past timestamp with hit, by default False
         """
 
         # set domain
@@ -156,6 +159,13 @@ class Ga4mp(object):
             request = {'client_id': self.client_id,
                        'events': batch}
             self._add_user_props_to_hit(request)
+
+            #make adjustments for postponed hit
+            request['events'] = { 'name' : batch['name'], 'params' : batch['params'] } if(postpone) else batch
+            if(postpone):
+                #add timestamp to hit
+                request['timestamp_micros'] = batch['_timestamp_micros']
+
             body = json.dumps(request)
 
             # Send http post request
@@ -164,6 +174,8 @@ class Ga4mp(object):
             logger.info(f'Batch Number: {batch_number}')
             logger.info(f'Status code: {status_code}')
             batch_number += 1
+
+        return status_code
 
     def _check_params(self, events):
 
@@ -242,3 +254,13 @@ class Ga4mp(object):
                     hit['user_properties'].update({ key : { "value" : self._user_properties[key]}})
             except:
                 logger.info(f"Failed to add user property to outgoing hit: {key}")
+
+    def _get_timestamp(self):
+        """
+        Method returns UNIX timestamp in microseconds for postponed hits.
+
+        Parameters
+        ----------
+        None
+        """
+        return int(time() * 1e6)
