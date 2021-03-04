@@ -16,7 +16,7 @@ class Ga4mpTestHistoricalHit(unittest.TestCase):
             measurement_id=MEASUREMENT_ID, api_secret=API_SECRET, client_id=CLIENT_ID
         )
 
-        event_type = "test_datetime_arg"
+        event_type = "test_datetime_now"
         event_parameters = {
             "paramater_key_1": "parameter_1",
         }
@@ -33,13 +33,13 @@ class Ga4mpTestHistoricalHit(unittest.TestCase):
 
     def test_datetime_delta(self):
 
-        dt = datetime.datetime.now() - datetime.timedelta(minutes=5)
+        dt = datetime.datetime.now() - datetime.timedelta(hours=1)
 
         ga = Ga4mp(
             measurement_id=MEASUREMENT_ID, api_secret=API_SECRET, client_id=CLIENT_ID
         )
-
-        event_type = "test_datetime_delta"
+        logger.info("Running 48hr")
+        event_type = "test_datetime_48hr"
         event_parameters = {
             "paramater_key_1": "parameter_1",
         }
