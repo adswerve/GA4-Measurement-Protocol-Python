@@ -154,6 +154,7 @@ class Ga4mp(object):
         date : datetime
             Python datetime object for sending a historical event at the given date. Date cannot be in the future.
             Timestamp micros supports up to 48 hours of backdating.
+            If date is specified, postpone must be False or an assertion will be thrown.
         """
         self._check_date_not_in_future(date)
         status_code = None  # Default set to know if batch loop does not work and to bound status_code
