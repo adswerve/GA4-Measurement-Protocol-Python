@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction &#8212; GA4 Measurement Protocol  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ga4mp" href="modules.html" />
+    <link rel="prev" title="Welcome!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This library provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.</p>
+<p><strong>NOTE</strong> This project is in <em>beta</em> and will be continually updated to cover relevant features of the GA4 Measurement Protocol. Please feel free to file issues for feature requests.</p>
+<p><a class="reference external" href="https://support.google.com/analytics/answer/10089681">Meet the next generation of Google Analytics: Learn about the new Google Analytics and how to get started</a></p>
+<div class="section" id="contact">
+<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h2>
+<p>Email: <code class="docutils literal notranslate"><span class="pre">analytics-help&#64;adswerve.com</span></code></p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way to install GA4 Measurement Protocol Support for Python is directly from PyPi using <code class="docutils literal notranslate"><span class="pre">pip</span></code> by running the following command:</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ga4mp</span></code></p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The required credentials for sending events to GA4 are made up by the following:</p>
+<p>| Credential     | Description                                                                                                                                                                                               |
+| ————– | ——————————————————————————————————————————————————————————————————— |
+| measurement_id | The identifier for a Data Stream. Found in the Google Analytics UI under:  <strong>Admin</strong> &gt; <strong>Data Streams</strong> &gt; <strong>choose your stream</strong> &gt; <strong>Measurement ID</strong>                                                     |
+| api_secret     | Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: <strong>Admin</strong> &gt; <strong>Data Streams</strong> &gt; <strong>choose your stream</strong> &gt; <strong>Measurement Protocol API secrets</strong> &gt; <strong>Create</strong> |
+| client_id      | <a class="reference external" href="https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid">Get your Google API client ID</a>                                                                                        |</p>
+<p>Create your <em>credentials.json</em> file and put in your “./credentials” subdirectory.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;MEASUREMENT_ID&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;YOUR_MEASUREMENT_ID&gt;&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;API_SECRET&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;YOUR_API_SECRET&gt;&quot;</span><span class="p">,</span>
+ <span class="nt">&quot;CLIENT_ID&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;YOUR_CLIENT_ID&gt;&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The following represents a simple example of a custom event sent to GA4:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ga4mp</span> <span class="kn">import</span> <span class="n">Ga4mp</span>
+
+<span class="c1"># Create an instance of GA4 object</span>
+<span class="n">ga</span> <span class="o">=</span> <span class="n">Ga4mp</span><span class="p">(</span><span class="n">measurement_id</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">MEASUREMENT_ID</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">api_secret</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">API_SECRET</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=&lt;</span><span class="n">CLIENT_ID</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="c1"># Specify event type and parameters</span>
+<span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;new_custom_event&#39;</span>
+<span class="n">event_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;paramater_key_1&#39;</span><span class="p">:</span> <span class="s1">&#39;parameter_1&#39;</span><span class="p">,</span> <span class="s1">&#39;paramater_key_2&#39;</span><span class="p">:</span> <span class="s1">&#39;parameter_2&#39;</span><span class="p">}</span>
+<span class="n">event</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">event_type</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">event_parameters</span> <span class="p">}</span>
+<span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span><span class="p">]</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Events need to be passed as a list of dictionaries, fitting the format:</span>
+<span class="sd">[{&#39;name&#39;: &#39;level_end&#39;,</span>
+<span class="sd">  &#39;params&#39; : {&#39;level_name&#39;: &#39;First&#39;,</span>
+<span class="sd">              &#39;success&#39;: &#39;True&#39;}</span>
+<span class="sd"> },</span>
+<span class="sd"> {&#39;name&#39;: &#39;level_up&#39;,</span>
+<span class="sd">  &#39;params&#39;: {&#39;character&#39;: &#39;John Madden&#39;,</span>
+<span class="sd">             &#39;level&#39;: &#39;First&#39;}</span>
+<span class="sd"> }]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Set persistent user properties</span>
+<span class="c1">#   Includes user_id, non_personalized_ads, and all else set as custom user_properties</span>
+<span class="n">ga</span><span class="o">.</span><span class="n">set_user_property</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="s1">&#39;Thales2000&#39;</span><span class="p">)</span>
+<span class="n">ga</span><span class="o">.</span><span class="n">set_user_property</span><span class="p">(</span><span class="s1">&#39;customer_tier&#39;</span><span class="p">,</span><span class="s1">&#39;enterprise&#39;</span><span class="p">)</span>
+
+<span class="c1"># Remove a user property</span>
+<span class="n">ga</span><span class="o">.</span><span class="n">delete_user_property</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+
+<span class="c1"># Send a custom event to GA4 immediately</span>
+<span class="n">ga</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+
+<span class="c1"># Postponed send of a custom event to GA4</span>
+<span class="n">ga</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">postpone</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ga</span><span class="o">.</span><span class="n">postponed_send</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-construct-events">
+<h2>How to construct Events<a class="headerlink" href="#how-to-construct-events" title="Permalink to this headline">¶</a></h2>
+<p>For more information on constructing events, please review the <a class="reference external" href="https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference">GA4 Measurement Protocol reference</a>.</p>
+</div>
+<div class="section" id="user-properties">
+<h2>User properties<a class="headerlink" href="#user-properties" title="Permalink to this headline">¶</a></h2>
+<p>For more information on what user properties are in GA4 and what you can do with them, <a class="reference external" href="https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties?client_type=gtag">please review here</a></p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>GA4 Measurement Protocol Support for Python is licensed under the <a class="reference external" href="./LICENSE">BSD License</a>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">GA4 Measurement Protocol</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-construct-events">How to construct Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-properties">User properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">ga4mp</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome!</a></li>
+      <li>Next: <a href="modules.html" title="next chapter">ga4mp</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Adswerve.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/README.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

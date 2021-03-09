@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ga4mp package &#8212; GA4 Measurement Protocol  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="ga4mp-package">
+<h1>ga4mp package<a class="headerlink" href="#ga4mp-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ga4mp.ga4mp">
+<span id="ga4mp-ga4mp-module"></span><h2>ga4mp.ga4mp module<a class="headerlink" href="#module-ga4mp.ga4mp" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="ga4mp.ga4mp.Ga4mp">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ga4mp.ga4mp.</span></code><code class="sig-name descname"><span class="pre">Ga4mp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_secret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.ga4mp.Ga4mp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurement_id</strong> (<em>string</em>) – The identifier for a Data Stream. Found in the Google Analytics UI under: Admin &gt; Data Streams &gt; choose your stream &gt; Measurement ID</p></li>
+<li><p><strong>api_secret</strong> (<em>string</em>) – Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: Admin &gt; Data Streams &gt;
+choose your stream &gt; Measurement Protocol &gt; Create</p></li>
+<li><p><strong>client_id</strong> (<em>string</em>) – Getting your Google API client ID: <a class="reference external" href="https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid">https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid</a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p>Measurement Protocol (Google Analytics 4): <a class="reference external" href="https://developers.google.com/analytics/devguides/collection/protocol/ga4">https://developers.google.com/analytics/devguides/collection/protocol/ga4</a></p></li>
+</ul>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ga</span> <span class="o">=</span> <span class="n">Ga4mp</span><span class="p">(</span><span class="n">measurement_id</span> <span class="o">=</span> <span class="s2">&quot;MEASUREMENT_ID&quot;</span><span class="p">,</span> <span class="n">api_secret</span> <span class="o">=</span> <span class="s2">&quot;API_SECRET&quot;</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;new_custom_event&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;paramater_key_1&#39;</span><span class="p">:</span> <span class="s1">&#39;parameter_1&#39;</span><span class="p">,</span> <span class="s1">&#39;paramater_key_2&#39;</span><span class="p">:</span> <span class="s1">&#39;parameter_2&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">event_type</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">event_parameters</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span><span class="p">]</span>
+</pre></div>
+</div>
+<p># Send a custom event to GA4 immediately
+&gt;&gt;&gt; ga.send(events)</p>
+<p># Postponed send of a custom event to GA4
+&gt;&gt;&gt; ga.send(events, postpone=True)
+&gt;&gt;&gt; ga.postponed_send()</p>
+<dl class="py method">
+<dt id="ga4mp.ga4mp.Ga4mp.append_event_to_params_dict">
+<code class="sig-name descname"><span class="pre">append_event_to_params_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_name_and_parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.ga4mp.Ga4mp.append_event_to_params_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to append event name and parameters key-value pair to parameters dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_name_and_parameters</strong> (<em>Dict</em>) – <p>A dictionary with one key-value pair representing a new type of event to be sent to Google Analytics.
+The dictionary should adhere to the following format:</p>
+<p>{‘new_name’: [‘new_param_1’, ‘new_param_2’, ‘new_param_3’]}</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.ga4mp.Ga4mp.delete_user_property">
+<code class="sig-name descname"><span class="pre">delete_user_property</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.ga4mp.Ga4mp.delete_user_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to remove user_id, user_properties, non_personalized_ads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>property</strong> (<em>string</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.ga4mp.Ga4mp.postponed_send">
+<code class="sig-name descname"><span class="pre">postponed_send</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.ga4mp.Ga4mp.postponed_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to send the events provided to Ga4mp.send(events,postpone=True)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.ga4mp.Ga4mp.send">
+<code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_hit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postpone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.ga4mp.Ga4mp.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to send an http post request to google analytics with the specified events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>events</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – <p>A list of dictionaries  of the events to be sent to Google Analytics. The list of dictionaries should adhere
+to the following format:</p>
+<p>[{‘name’: ‘level_end’,
+‘params’ : {‘level_name’: ‘First’,</p>
+<blockquote>
+<div><p>’success’: ‘True’}</p>
+</div></blockquote>
+<p>},
+{‘name’: ‘level_up’,
+‘params’: {‘character’: ‘John Madden’,</p>
+<blockquote>
+<div><p>’level’: ‘First’}</p>
+</div></blockquote>
+<p>}]</p>
+</p></li>
+<li><p><strong>validation_hit</strong> (<em>bool</em><em>, </em><em>optional</em>) – Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False</p></li>
+<li><p><strong>postpone</strong> (<em>bool</em><em>, </em><em>optional</em>) – Boolean to depict if provided event list should be postponed, by default False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.ga4mp.Ga4mp.set_user_property">
+<code class="sig-name descname"><span class="pre">set_user_property</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.ga4mp.Ga4mp.set_user_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to set user_id, user_properties, non_personalized_ads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property</strong> (<em>string</em>) – </p></li>
+<li><p><strong>value</strong> (<em>dependent on property</em><em> (</em><em>user_id</em><em>, </em><em>user_properties - string</em><em>, </em><em>non_personalized_ads - bool</em><em>)</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ga4mp.utils">
+<span id="ga4mp-utils-module"></span><h2>ga4mp.utils module<a class="headerlink" href="#module-ga4mp.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ga4mp">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ga4mp" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="ga4mp.Ga4mp">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ga4mp.</span></code><code class="sig-name descname"><span class="pre">Ga4mp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_secret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.Ga4mp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurement_id</strong> (<em>string</em>) – The identifier for a Data Stream. Found in the Google Analytics UI under: Admin &gt; Data Streams &gt; choose your stream &gt; Measurement ID</p></li>
+<li><p><strong>api_secret</strong> (<em>string</em>) – Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: Admin &gt; Data Streams &gt;
+choose your stream &gt; Measurement Protocol &gt; Create</p></li>
+<li><p><strong>client_id</strong> (<em>string</em>) – Getting your Google API client ID: <a class="reference external" href="https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid">https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid</a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p>Measurement Protocol (Google Analytics 4): <a class="reference external" href="https://developers.google.com/analytics/devguides/collection/protocol/ga4">https://developers.google.com/analytics/devguides/collection/protocol/ga4</a></p></li>
+</ul>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ga</span> <span class="o">=</span> <span class="n">Ga4mp</span><span class="p">(</span><span class="n">measurement_id</span> <span class="o">=</span> <span class="s2">&quot;MEASUREMENT_ID&quot;</span><span class="p">,</span> <span class="n">api_secret</span> <span class="o">=</span> <span class="s2">&quot;API_SECRET&quot;</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;new_custom_event&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;paramater_key_1&#39;</span><span class="p">:</span> <span class="s1">&#39;parameter_1&#39;</span><span class="p">,</span> <span class="s1">&#39;paramater_key_2&#39;</span><span class="p">:</span> <span class="s1">&#39;parameter_2&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">event_type</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">event_parameters</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span><span class="p">]</span>
+</pre></div>
+</div>
+<p># Send a custom event to GA4 immediately
+&gt;&gt;&gt; ga.send(events)</p>
+<p># Postponed send of a custom event to GA4
+&gt;&gt;&gt; ga.send(events, postpone=True)
+&gt;&gt;&gt; ga.postponed_send()</p>
+<dl class="py method">
+<dt id="ga4mp.Ga4mp.append_event_to_params_dict">
+<code class="sig-name descname"><span class="pre">append_event_to_params_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_name_and_parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.Ga4mp.append_event_to_params_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to append event name and parameters key-value pair to parameters dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_name_and_parameters</strong> (<em>Dict</em>) – <p>A dictionary with one key-value pair representing a new type of event to be sent to Google Analytics.
+The dictionary should adhere to the following format:</p>
+<p>{‘new_name’: [‘new_param_1’, ‘new_param_2’, ‘new_param_3’]}</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.Ga4mp.delete_user_property">
+<code class="sig-name descname"><span class="pre">delete_user_property</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.Ga4mp.delete_user_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to remove user_id, user_properties, non_personalized_ads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>property</strong> (<em>string</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.Ga4mp.postponed_send">
+<code class="sig-name descname"><span class="pre">postponed_send</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.Ga4mp.postponed_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to send the events provided to Ga4mp.send(events,postpone=True)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.Ga4mp.send">
+<code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_hit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postpone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.Ga4mp.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to send an http post request to google analytics with the specified events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>events</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – <p>A list of dictionaries  of the events to be sent to Google Analytics. The list of dictionaries should adhere
+to the following format:</p>
+<p>[{‘name’: ‘level_end’,
+‘params’ : {‘level_name’: ‘First’,</p>
+<blockquote>
+<div><p>’success’: ‘True’}</p>
+</div></blockquote>
+<p>},
+{‘name’: ‘level_up’,
+‘params’: {‘character’: ‘John Madden’,</p>
+<blockquote>
+<div><p>’level’: ‘First’}</p>
+</div></blockquote>
+<p>}]</p>
+</p></li>
+<li><p><strong>validation_hit</strong> (<em>bool</em><em>, </em><em>optional</em>) – Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False</p></li>
+<li><p><strong>postpone</strong> (<em>bool</em><em>, </em><em>optional</em>) – Boolean to depict if provided event list should be postponed, by default False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ga4mp.Ga4mp.set_user_property">
+<code class="sig-name descname"><span class="pre">set_user_property</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ga4mp.Ga4mp.set_user_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to set user_id, user_properties, non_personalized_ads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property</strong> (<em>string</em>) – </p></li>
+<li><p><strong>value</strong> (<em>dependent on property</em><em> (</em><em>user_id</em><em>, </em><em>user_properties - string</em><em>, </em><em>non_personalized_ads - bool</em><em>)</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">GA4 Measurement Protocol</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Introduction</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Adswerve.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/ga4mp.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
