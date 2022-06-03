@@ -14,8 +14,8 @@ import time
 import datetime
 from ga4mp.utils import params_dict
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class Ga4mp(object):
