@@ -21,11 +21,11 @@ The easiest way to install GA4 Measurement Protocol Support for Python is direct
 
 The required credentials for sending events to GA4 are made up by the following:
 
-|Credential|Description|
-|---|---|
-|measurement_id|The identifier for a Data Stream. Found in the Google Analytics UI under:  **Admin** > **Data Streams** > **choose your stream** > **Measurement ID**|
-|api_secret|Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: **Admin** > **Data Streams** > **choose your stream** > **Measurement Protocol** > **Create**|
-|client_id|[Get your Google API client ID](https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid)|
+| Credential     | Description                                                                                                                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| measurement_id | The identifier for a Data Stream. Found in the Google Analytics UI under:  **Admin** > **Data Streams** > **choose your stream** > **Measurement ID**                                                     |
+| api_secret     | Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: **Admin** > **Data Streams** > **choose your stream** > **Measurement Protocol API secrets** > **Create** |
+| client_id      | [Get your Google API client ID](https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid)                                                                                        |
 
 
 Create your *credentials.json* file and put in your "./credentials" subdirectory.
@@ -37,7 +37,7 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
 ```
 The following represents a simple example of a custom event sent to GA4:
 ``` python
-from ga4measurementprotocol import Ga4mp
+from ga4mp import Ga4mp
 
 # Create an instance of GA4 object
 ga = Ga4mp(measurement_id = <MEASUREMENT_ID>, api_secret = <API_SECRET>, client_id=<CLIENT_ID>)
@@ -60,6 +60,14 @@ Events need to be passed as a list of dictionaries, fitting the format:
  }]
 """
 
+# Set persistent user properties
+#   Includes user_id, non_personalized_ads, and all else set as custom user_properties
+ga.set_user_property('user_id', 'Thales2000')
+ga.set_user_property('customer_tier','enterprise')
+
+# Remove a user property
+ga.delete_user_property('user_id')
+
 # Send a custom event to GA4 immediately
 ga.send(events)
 
@@ -68,6 +76,12 @@ ga.send(events, postpone=True)
 ga.postponed_send()
 ```
 
-## Liscense
+## How to construct Events
+For more information on constructing events, please review the [GA4 Measurement Protocol reference](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference).
+
+## User properties
+For more information on what user properties are in GA4 and what you can do with them, [please review here](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties?client_type=gtag)
+
+## License
 
 GA4 Measurement Protocol Support for Python is licensed under the [BSD License](./LICENSE).

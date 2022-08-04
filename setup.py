@@ -6,7 +6,7 @@ try:
 except Exception:
     long_description="Google Analytics 4 Measurement Protocol in Python; an implementation of Google's Analytics 4 Measurement Protocol"
 
-VERSION = '1.0.0'
+VERSION = '1.1.1'
 
 setup(
     name = "ga4mp",
