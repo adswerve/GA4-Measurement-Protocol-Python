@@ -1,9 +1,9 @@
 ###############################################################################
 # Google Analytics 4 Measurement Protocol for Python
-# Copyright (c) 2020, Analytics Pros
+# Copyright (c) 2022, Adswerve
 #
 # This project is free software, distributed under the BSD license.
-# Analytics Pros offers consulting and integration services if your firm needs
+# Adswerve offers consulting and integration services if your firm needs
 # assistance in strategy, implementation, or auditing existing work.
 ###############################################################################
 
