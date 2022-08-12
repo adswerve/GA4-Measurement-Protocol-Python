@@ -154,6 +154,7 @@ class Ga4mp(object):
             Timestamp micros supports up to 48 hours of backdating.
             If date is specified, postpone must be False or an assertion will be thrown.
         """
+        self._check_using_subclass()
         self._check_date_not_in_future(date)
         status_code = None  # Default set to know if batch loop does not work and to bound status_code
 
@@ -166,8 +167,13 @@ class Ga4mp(object):
         # loop through events in batches of 25
         batch_number = 1
         for batch in batched_event_list:
-            url = f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
-            request = {"client_id": self.client_id, "events": batch}
+            # url and request slightly differ by subclass
+            if type(self).__name__ == 'gtagMP':
+                url = f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
+                request = {"client_id": self.client_id, "events": batch}
+            elif type(self).__name__ == 'firebaseMP':
+                url = f"{domain}?firebase_app_id={self.firebase_app_id}&api_secret={self.api_secret}"
+                request = {"app_instance_id": self.app_instance_id, "events": batch}
             self._add_user_props_to_hit(request)
 
             # make adjustments for postponed hit
@@ -346,7 +352,7 @@ class Ga4mp(object):
         """
         Method to check that the object is not the parent `Ga4mp` object.
         """
-        assert type(self).__name__ != 'Ga4mp', "only subclasses of gtagMP or firebaseMP can send POST requests"
+        assert type(self).__name__ != "Ga4mp", "only subclasses of gtagMP or firebaseMP can send POST requests"
 
 class gtagMP(Ga4mp):
     """
