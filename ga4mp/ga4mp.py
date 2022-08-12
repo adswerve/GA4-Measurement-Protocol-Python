@@ -343,3 +343,9 @@ class Ga4mp(object):
             assert (
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
+
+class GtagGa4mp(Ga4mp):
+    pass
+
+class FirebaseGa4mp(Ga4mp):
+    pass
