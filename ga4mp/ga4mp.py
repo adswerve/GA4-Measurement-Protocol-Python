@@ -375,6 +375,8 @@ class gtagMP(Ga4mp):
     def set_new_client_id(self, randomize=True, manual_id=None):
         if randomize:
             self.client_id = "%0.10d" % random.randint(0,9999999999) + "." + str(int(time.time()))
+        elif manual_id == None:
+            logger.error("ERROR: if not using randomization, a manual ID must be specified.")
         else:
             self.client_id = manual_id
 
