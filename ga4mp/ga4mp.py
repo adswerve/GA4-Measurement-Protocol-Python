@@ -1,9 +1,9 @@
 ###############################################################################
 # Google Analytics 4 Measurement Protocol for Python
-# Copyright (c) 2020, Analytics Pros
+# Copyright (c) 2022, Adswerve
 #
 # This project is free software, distributed under the BSD license.
-# Analytics Pros offers consulting and integration services if your firm needs
+# Adswerve offers consulting and integration services if your firm needs
 # assistance in strategy, implementation, or auditing existing work.
 ###############################################################################
 
@@ -25,10 +25,10 @@ class Ga4mp(object):
     Parameters
     ----------
     measurement_id : string
-        The identifier for a Data Stream. Found in the Google Analytics UI under: Admin > Data Streams > choose your stream > Measurement ID
+        The identifier for a Data Stream. Found in the Google Analytics UI under: Admin > Data Streams > [choose your stream] > Measurement ID (top-right)
     api_secret : string
-        Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: Admin > Data Streams >
-        choose your stream > Measurement Protocol > Create
+        Generated through the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: Admin > Data Streams >
+        [choose your stream] > Measurement Protocol API Secrets > Create
     client_id : string
         Getting your Google API client ID: https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid
 
@@ -43,7 +43,7 @@ class Ga4mp(object):
 
     >>> ga = Ga4mp(measurement_id = "MEASUREMENT_ID", api_secret = "API_SECRET", client_id="CLIENT_ID")
     >>> event_type = 'new_custom_event'
-    >>> event_parameters = {'paramater_key_1': 'parameter_1', 'paramater_key_2': 'parameter_2'}
+    >>> event_parameters = {'parameter_key_1': 'parameter_1', 'parameter_key_2': 'parameter_2'}
     >>> event = {'name': event_type, 'params': event_parameters }
     >>> events = [event]
 
@@ -71,7 +71,7 @@ class Ga4mp(object):
         Parameters
         ----------
         events : List[Dict]
-            A list of dictionaries  of the events to be sent to Google Analytics. The list of dictionaries should adhere
+            A list of dictionaries of the events to be sent to Google Analytics. The list of dictionaries should adhere
             to the following format:
 
             [{'name': 'level_end',
@@ -124,7 +124,7 @@ class Ga4mp(object):
     def append_event_to_params_dict(self, new_name_and_parameters):
 
         """
-        Method to append event name and parameters key-value pair to parameters dictionary.
+        Method to append event name and parameters key-value pairing(s) to parameters dictionary.
 
         Parameters
         ----------
@@ -211,12 +211,12 @@ class Ga4mp(object):
     def _check_params(self, events):
 
         """
-        Method to check whether the event payload parameters provided meets supported parameters.
+        Method to check whether the provided event payload parameters align with supported parameters.
 
         Parameters
         ----------
         events : List[Dict]
-            A list of dictionaries  of the events to be sent to Google Analytics. The list of dictionaries should adhere
+            A list of dictionaries of the events to be sent to Google Analytics. The list of dictionaries should adhere
             to the following format:
 
             [{'name': 'level_end',
