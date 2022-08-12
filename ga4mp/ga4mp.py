@@ -342,9 +342,15 @@ class Ga4mp(object):
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
 
+    def _check_using_subclass(self):
+        """
+        Method to check that the object is not the parent `Ga4mp` object.
+        """
+        assert type(self).__name__ != 'Ga4mp', "only subclasses of gtagMP or firebaseMP can send POST requests"
+
 class gtagMP(Ga4mp):
     """
-    Subclass for users of gtag. See Ga4mp parent class for examples.
+    Subclass for users of gtag. See `Ga4mp` parent class for examples.
 
     Parameters
     ----------
@@ -352,7 +358,6 @@ class gtagMP(Ga4mp):
         The identifier for a Data Stream. Found in the Google Analytics UI under: Admin > Data Streams > [choose your stream] > Measurement ID (top-right)
     client_id : string
         A unique identifier for a client, representing a specific browser/device.
-
     """
 
     def __init__(self, api_secret, measurement_id, client_id):
@@ -362,7 +367,7 @@ class gtagMP(Ga4mp):
 
 class firebaseMP(Ga4mp):
     """
-    Subclass for users of Firebase. See Ga4mp parent class for examples.
+    Subclass for users of Firebase. See `Ga4mp` parent class for examples.
 
     Parameters
     ----------
@@ -376,7 +381,6 @@ class firebaseMP(Ga4mp):
             * Objective-C - appInstanceID - https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#+appinstanceid
             * C++ - GetAnalyticsInstanceId() - https://firebase.google.com/docs/reference/cpp/namespace/firebase/analytics#getanalyticsinstanceid
             * Unity - GetAnalyticsInstanceIdAsync() - https://firebase.google.com/docs/reference/unity/class/firebase/analytics/firebase-analytics#getanalyticsinstanceidasync
-
     """
 
     def __init__(self, api_secret, firebase_app_id, app_instance_id):
