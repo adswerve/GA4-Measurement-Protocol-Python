@@ -12,6 +12,7 @@ import logging
 import urllib.request
 import time
 import datetime
+import random
 from ga4mp.utils import params_dict
 
 logger = logging.getLogger(__name__)
@@ -370,6 +371,12 @@ class gtagMP(Ga4mp):
         super().__init__(api_secret)
         self.measurement_id = measurement_id
         self.client_id = client_id
+
+    def set_new_client_id(self, randomize=True, manual_id=None):
+        if randomize:
+            self.client_id = "%0.10d" % random.randint(0,9999999999) + "." + str(int(time.time()))
+        else:
+            self.client_id = manual_id
 
 class firebaseMP(Ga4mp):
     """
