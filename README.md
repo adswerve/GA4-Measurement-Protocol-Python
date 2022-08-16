@@ -10,6 +10,9 @@ This library provides an interface for sending data to Google Analytics, support
 
 Email: `analytics-help@adswerve.com`
 
+## Important Update
+Recent changes have added new platform specific subclasses. In order to take advantage of new functionality, you will need to update the class name of the GA4 object(s) being created in your code. See Usage for more details.
+
 ## Installation
 
 The easiest way to install GA4 Measurement Protocol Support for Python is directly from PyPi using `pip` by running the following command:
@@ -18,6 +21,7 @@ The easiest way to install GA4 Measurement Protocol Support for Python is direct
 
 
 ## Usage
+This library supports both gtag and Firebase data collection models.
 
 The required credentials for sending events to GA4 are made up by the following:
 
