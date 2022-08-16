@@ -155,7 +155,6 @@ class Ga4mp(object):
             Timestamp micros supports up to 48 hours of backdating.
             If date is specified, postpone must be False or an assertion will be thrown.
         """
-        self._check_using_subclass()
         self._check_date_not_in_future(date)
         status_code = None  # Default set to know if batch loop does not work and to bound status_code
 
@@ -169,12 +168,8 @@ class Ga4mp(object):
         batch_number = 1
         for batch in batched_event_list:
             # url and request slightly differ by subclass
-            if type(self).__name__ == 'gtagMP':
-                url = f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
-                request = {"client_id": self.client_id, "events": batch}
-            elif type(self).__name__ == 'firebaseMP':
-                url = f"{domain}?firebase_app_id={self.firebase_app_id}&api_secret={self.api_secret}"
-                request = {"app_instance_id": self.app_instance_id, "events": batch}
+            url = self.build_url(domain=domain)
+            request = self.build_request(batch=batch)
             self._add_user_props_to_hit(request)
 
             # make adjustments for postponed hit
@@ -349,12 +344,6 @@ class Ga4mp(object):
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
 
-    def _check_using_subclass(self):
-        """
-        Method to check that the object is not the parent `Ga4mp` object.
-        """
-        assert type(self).__name__ != "Ga4mp", "only subclasses of gtagMP or firebaseMP can send POST requests"
-
 class gtagMP(Ga4mp):
     """
     Subclass for users of gtag. See `Ga4mp` parent class for examples.
@@ -371,6 +360,12 @@ class gtagMP(Ga4mp):
         super().__init__(api_secret)
         self.measurement_id = measurement_id
         self.client_id = client_id
+
+    def build_url(self, domain):
+        return f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
+
+    def build_request(self, batch):
+        return {"client_id": self.client_id, "events": batch}
 
     def set_new_client_id(self, randomize=True, manual_id=None):
         if randomize:
@@ -402,3 +397,9 @@ class firebaseMP(Ga4mp):
         super().__init__(api_secret)
         self.firebase_app_id = firebase_app_id
         self.app_instance_id = app_instance_id
+
+    def build_url(self, domain):
+        return f"{domain}?firebase_app_id={self.firebase_app_id}&api_secret={self.api_secret}"
+
+    def build_request(self, batch):
+        return {"app_instance_id": self.app_instance_id, "events": batch}
