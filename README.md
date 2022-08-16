@@ -2,16 +2,13 @@
 
 This library provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.
 
-**NOTE** This project is in *beta* and will be continually updated to cover relevant features of the GA4 Measurement Protocol. Please feel free to file issues for feature requests.
+**NOTE**: This project is in *beta* and will be continually updated to cover relevant features of the GA4 Measurement Protocol. Please feel free to file issues for feature requests.
 
 [Meet the next generation of Google Analytics: Learn about the new Google Analytics and how to get started](https://support.google.com/analytics/answer/10089681)
 
 ## Contact
 
 Email: `analytics-help@adswerve.com`
-
-## Important Update
-Recent changes have added new platform specific subclasses. In order to take advantage of new functionality, you will need to update the class name of the GA4 object(s) being created in your code. See Usage for more details.
 
 ## Installation
 
@@ -21,7 +18,9 @@ The easiest way to install GA4 Measurement Protocol Support for Python is direct
 
 
 ## Usage
-This library supports both gtag and Firebase data collection models.
+> **NOTE**: Recent changes have added new platform specific subclasses. In order to take advantage of new functionality, you will need to update the class name of the GA4 object(s) being created in your code.
+
+This library supports both gtag and Firebase data collection models. When creating your tracking object, use either `gtagMP` or `firebaseMP`, depending on your needs.
 
 The required credentials for sending events to GA4 using **gtag** comprise the following:
 
@@ -50,7 +49,7 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
 ```
 The following represents a simple example of a custom event sent to GA4:
 ``` python
-from ga4mp import Ga4mp
+from ga4mp import gtagMP, firebaseMP
 
 # Create an instance of GA4 object using gtag...
 ga = gtagMP(api_secret = <API_SECRET>, measurement_id = <MEASUREMENT_ID>, client_id=<CLIENT_ID>)
@@ -60,7 +59,7 @@ ga = firebaseMP(api_secret = <API_SECRET>, firebase_app_id=<FIREBASE_APP_ID>, ap
 
 # Specify event type and parameters
 event_type = 'new_custom_event'
-event_parameters = {'paramater_key_1': 'parameter_1', 'paramater_key_2': 'parameter_2'}
+event_parameters = {'parameter_key_1': 'parameter_1', 'parameter_key_2': 'parameter_2'}
 event = {'name': event_type, 'params': event_parameters }
 events = [event]
 
@@ -77,7 +76,7 @@ Events need to be passed as a list of dictionaries, fitting the format:
 """
 
 # Set persistent user properties
-#   Includes user_id, non_personalized_ads, and all else set as custom user_properties
+# Includes user_id, non_personalized_ads, and all else set as custom user_properties
 ga.set_user_property('user_id', 'Thales2000')
 ga.set_user_property('customer_tier','enterprise')
 
@@ -90,6 +89,9 @@ ga.send(events)
 # Postponed send of a custom event to GA4
 ga.send(events, postpone=True)
 ga.postponed_send()
+
+# Generate and set a new, random Client ID (gtagMP objects only)
+ga.client_id = ga.random_client_id()
 ```
 
 ## How to construct Events
