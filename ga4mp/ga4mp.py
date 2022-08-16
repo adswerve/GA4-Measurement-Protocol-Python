@@ -367,13 +367,11 @@ class gtagMP(Ga4mp):
     def build_request(self, batch):
         return {"client_id": self.client_id, "events": batch}
 
-    def set_new_client_id(self, randomize=True, manual_id=None):
-        if randomize:
-            self.client_id = "%0.10d" % random.randint(0,9999999999) + "." + str(int(time.time()))
-        elif manual_id == None:
-            logger.error("ERROR: if not using randomization, a manual ID must be specified.")
-        else:
-            self.client_id = manual_id
+    def random_client_id(self):
+        """
+        Utility function for generating a new client ID matching the typical format of 10 random digits and the UNIX timestamp in seconds, joined by a period.
+        """
+        return "%0.10d" % random.randint(0,9999999999) + "." + str(int(time.time()))
 
 class firebaseMP(Ga4mp):
     """
