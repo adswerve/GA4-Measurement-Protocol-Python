@@ -23,28 +23,40 @@ The easiest way to install GA4 Measurement Protocol Support for Python is direct
 ## Usage
 This library supports both gtag and Firebase data collection models.
 
-The required credentials for sending events to GA4 are made up by the following:
+The required credentials for sending events to GA4 using **gtag** comprise the following:
 
 | Credential     | Description                                                                                                                                                                                               |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| measurement_id | The identifier for a Data Stream. Found in the Google Analytics UI under:  **Admin** > **Data Streams** > **choose your stream** > **Measurement ID**                                                     |
 | api_secret     | Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: **Admin** > **Data Streams** > **choose your stream** > **Measurement Protocol API secrets** > **Create** |
-| client_id      | [Get your Google API client ID](https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid)                                                                                        |
+| measurement_id | The identifier for a Data Stream. Found in the Google Analytics UI under:  **Admin** > **Data Streams** > **choose your stream** > **Measurement ID**                                                     |
+| client_id      | A unique identifier for a client, representing a specific browser/device.                                                                                                                                 |
 
+The required credentials for sending events to **Firebase** comprise the following:
+
+| Credential      | Description                                                                                                                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| api_secret      | Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: **Admin** > **Data Streams** > **choose your stream** > **Measurement Protocol API secrets** > **Create** |
+| firebase_app_id | The identifier for a Firebase app. Found in the Firebase console under: **Project Settings** > **General** > **Your Apps** > **App ID**.                                                                  |
+| app_instance_id | A unique identifier for a Firebase app instance. See [Required parameters > 2. JSON body](https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=firebase#required_parameters) for details. |
 
 Create your *credentials.json* file and put in your "./credentials" subdirectory.
 
 ``` json
-{"MEASUREMENT_ID": "<YOUR_MEASUREMENT_ID>",
- "API_SECRET": "<YOUR_API_SECRET>",
- "CLIENT_ID": "<YOUR_CLIENT_ID>"}
+{"API_SECRET": "<YOUR_API_SECRET>",
+ "MEASUREMENT_ID": "<YOUR_MEASUREMENT_ID>",
+ "CLIENT_ID": "<YOUR_CLIENT_ID>",
+ "FIREBASE_APP_ID": "<YOUR_FIREBASE_APP_ID>",
+ "APP_INSTANCE_ID": "<YOUR_APP_INSTANCE_ID>"}
 ```
 The following represents a simple example of a custom event sent to GA4:
 ``` python
 from ga4mp import Ga4mp
 
-# Create an instance of GA4 object
-ga = Ga4mp(measurement_id = <MEASUREMENT_ID>, api_secret = <API_SECRET>, client_id=<CLIENT_ID>)
+# Create an instance of GA4 object using gtag...
+ga = gtagMP(api_secret = <API_SECRET>, measurement_id = <MEASUREMENT_ID>, client_id=<CLIENT_ID>)
+
+# ...or create an object using Firebase.
+ga = firebaseMP(api_secret = <API_SECRET>, firebase_app_id=<FIREBASE_APP_ID>, app_instance_id=<CLIENT_ID>)
 
 # Specify event type and parameters
 event_type = 'new_custom_event'
