@@ -12,26 +12,22 @@ import logging
 import urllib.request
 import time
 import datetime
+import random
 from ga4mp.utils import params_dict
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class Ga4mp(object):
+class BaseGa4mp(object):
     """
-    Class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.
+    Parent class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.
 
     Parameters
     ----------
-    measurement_id : string
-        The identifier for a Data Stream. Found in the Google Analytics UI under: Admin > Data Streams > [choose your stream] > Measurement ID (top-right)
     api_secret : string
         Generated through the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: Admin > Data Streams >
         [choose your stream] > Measurement Protocol API Secrets > Create
-    client_id : string
-        Getting your Google API client ID: https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid
-
 
     See Also
     --------
@@ -40,8 +36,13 @@ class Ga4mp(object):
 
     Examples
     --------
+    # Initialize tracking object for gtag usage
+    >>> ga = gtagMP(api_secret = "API_SECRET", measurement_id = "MEASUREMENT_ID", client_id="CLIENT_ID")
 
-    >>> ga = Ga4mp(measurement_id = "MEASUREMENT_ID", api_secret = "API_SECRET", client_id="CLIENT_ID")
+    # Initialize tracking object for Firebase usage
+    >>> ga = firebaseMP(api_secret = "API_SECRET", firebase_app_id = "FIREBASE_APP_ID", app_instance_id="APP_INSTANCE_ID")
+
+    # Build an event
     >>> event_type = 'new_custom_event'
     >>> event_parameters = {'parameter_key_1': 'parameter_1', 'parameter_key_2': 'parameter_2'}
     >>> event = {'name': event_type, 'params': event_parameters }
@@ -55,10 +56,8 @@ class Ga4mp(object):
     >>> ga.postponed_send()
     """
 
-    def __init__(self, measurement_id, api_secret, client_id):
-        self.measurement_id = measurement_id
+    def __init__(self, api_secret):
         self.api_secret = api_secret
-        self.client_id = client_id
         self._event_list = []
         self._user_properties = {}
         self._base_domain = "https://www.google-analytics.com/mp/collect"
@@ -168,8 +167,9 @@ class Ga4mp(object):
         # loop through events in batches of 25
         batch_number = 1
         for batch in batched_event_list:
-            url = f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
-            request = {"client_id": self.client_id, "events": batch}
+            # url and request slightly differ by subclass
+            url = self._build_url(domain=domain)
+            request = self._build_request(batch=batch)
             self._add_user_props_to_hit(request)
 
             # make adjustments for postponed hit
@@ -343,3 +343,67 @@ class Ga4mp(object):
             assert (
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
+
+    def _build_url(self, domain):
+        raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
+
+    def _build_request(self, batch):
+        raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
+
+class GtagMP(BaseGa4mp):
+    """
+    Subclass for users of gtag. See `Ga4mp` parent class for examples.
+
+    Parameters
+    ----------
+    measurement_id : string
+        The identifier for a Data Stream. Found in the Google Analytics UI under: Admin > Data Streams > [choose your stream] > Measurement ID (top-right)
+    client_id : string
+        A unique identifier for a client, representing a specific browser/device.
+    """
+
+    def __init__(self, api_secret, measurement_id, client_id):
+        super().__init__(api_secret)
+        self.measurement_id = measurement_id
+        self.client_id = client_id
+
+    def _build_url(self, domain):
+        return f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
+
+    def _build_request(self, batch):
+        return {"client_id": self.client_id, "events": batch}
+
+    def random_client_id(self):
+        """
+        Utility function for generating a new client ID matching the typical format of 10 random digits and the UNIX timestamp in seconds, joined by a period.
+        """
+        return "%0.10d" % random.randint(0,9999999999) + "." + str(int(time.time()))
+
+class FirebaseMP(BaseGa4mp):
+    """
+    Subclass for users of Firebase. See `Ga4mp` parent class for examples.
+
+    Parameters
+    ----------
+    firebase_app_id : string
+        The identifier for a Firebase app. Found in the Firebase console under: Project Settings > General > Your Apps > App ID.
+    app_instance_id : string
+        A unique identifier for a Firebase app instance.
+            * Android - getAppInstanceId() - https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics#public-taskstring-getappinstanceid
+            * Kotlin - getAppInstanceId() - https://firebase.google.com/docs/reference/kotlin/com/google/firebase/analytics/FirebaseAnalytics#getappinstanceid
+            * Swift - appInstanceID() - https://firebase.google.com/docs/reference/swift/firebaseanalytics/api/reference/Classes/Analytics#appinstanceid
+            * Objective-C - appInstanceID - https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#+appinstanceid
+            * C++ - GetAnalyticsInstanceId() - https://firebase.google.com/docs/reference/cpp/namespace/firebase/analytics#getanalyticsinstanceid
+            * Unity - GetAnalyticsInstanceIdAsync() - https://firebase.google.com/docs/reference/unity/class/firebase/analytics/firebase-analytics#getanalyticsinstanceidasync
+    """
+
+    def __init__(self, api_secret, firebase_app_id, app_instance_id):
+        super().__init__(api_secret)
+        self.firebase_app_id = firebase_app_id
+        self.app_instance_id = app_instance_id
+
+    def _build_url(self, domain):
+        return f"{domain}?firebase_app_id={self.firebase_app_id}&api_secret={self.api_secret}"
+
+    def _build_request(self, batch):
+        return {"app_instance_id": self.app_instance_id, "events": batch}

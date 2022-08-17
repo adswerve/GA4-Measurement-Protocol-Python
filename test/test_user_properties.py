@@ -4,8 +4,8 @@ from ga4mp import Ga4mp
 import datetime
 from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class Ga4mpTestUserProperties(unittest.TestCase):
