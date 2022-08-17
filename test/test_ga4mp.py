@@ -9,8 +9,8 @@ from ga4mp.utils import params_dict
 from main import MEASUREMENT_ID, API_SECRET, CLIENT_ID
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 from testfixtures import log_capture
 
 
