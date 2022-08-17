@@ -345,10 +345,10 @@ class BaseGa4mp(object):
             ), "Provided date cannot be in the future"
 
     def _build_url(self, domain):
-        raise NotImplementedError()
+        raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
 
     def _build_request(self, batch):
-        raise NotImplementedError()
+        raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
 
 class GtagMP(BaseGa4mp):
     """
