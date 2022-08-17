@@ -168,8 +168,8 @@ class BaseGa4mp(object):
         batch_number = 1
         for batch in batched_event_list:
             # url and request slightly differ by subclass
-            url = self.build_url(domain=domain)
-            request = self.build_request(batch=batch)
+            url = self._build_url(domain=domain)
+            request = self._build_request(batch=batch)
             self._add_user_props_to_hit(request)
 
             # make adjustments for postponed hit
@@ -344,6 +344,12 @@ class BaseGa4mp(object):
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
 
+    def _build_url(self):
+        raise NotImplementedError()
+
+    def _build_request(self):
+        raise NotImplementedError()
+
 class GtagMP(BaseGa4mp):
     """
     Subclass for users of gtag. See `Ga4mp` parent class for examples.
@@ -361,10 +367,10 @@ class GtagMP(BaseGa4mp):
         self.measurement_id = measurement_id
         self.client_id = client_id
 
-    def build_url(self, domain):
+    def _build_url(self, domain):
         return f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
 
-    def build_request(self, batch):
+    def _build_request(self, batch):
         return {"client_id": self.client_id, "events": batch}
 
     def random_client_id(self):
@@ -396,8 +402,8 @@ class FirebaseMP(BaseGa4mp):
         self.firebase_app_id = firebase_app_id
         self.app_instance_id = app_instance_id
 
-    def build_url(self, domain):
+    def _build_url(self, domain):
         return f"{domain}?firebase_app_id={self.firebase_app_id}&api_secret={self.api_secret}"
 
-    def build_request(self, batch):
+    def _build_request(self, batch):
         return {"app_instance_id": self.app_instance_id, "events": batch}
