@@ -20,7 +20,7 @@ The easiest way to install GA4 Measurement Protocol Support for Python is direct
 ## Usage
 > **NOTE**: Recent changes have added new platform specific subclasses. In order to take advantage of new functionality, you will need to update the class name of the GA4 object(s) being created in your code.
 
-This library supports both gtag and Firebase data collection models. When creating your tracking object, use either `gtagMP` or `firebaseMP`, depending on your needs.
+This library supports both gtag and Firebase data collection models. When creating your tracking object, use either `GtagMP` or `FirebaseMP`, depending on your needs.
 
 The required credentials for sending events to GA4 using **gtag** comprise the following:
 
@@ -52,10 +52,10 @@ The following represents a simple example of a custom event sent to GA4:
 from ga4mp import gtagMP, firebaseMP
 
 # Create an instance of GA4 object using gtag...
-ga = gtagMP(api_secret = <API_SECRET>, measurement_id = <MEASUREMENT_ID>, client_id=<CLIENT_ID>)
+ga = GtagMP(api_secret = <API_SECRET>, measurement_id = <MEASUREMENT_ID>, client_id=<CLIENT_ID>)
 
 # ...or create an object using Firebase.
-ga = firebaseMP(api_secret = <API_SECRET>, firebase_app_id=<FIREBASE_APP_ID>, app_instance_id=<CLIENT_ID>)
+ga = FirebaseMP(api_secret = <API_SECRET>, firebase_app_id=<FIREBASE_APP_ID>, app_instance_id=<CLIENT_ID>)
 
 # Specify event type and parameters
 event_type = 'new_custom_event'

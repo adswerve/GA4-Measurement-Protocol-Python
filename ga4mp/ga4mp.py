@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class Ga4mp(object):
+class BaseGa4mp(object):
     """
     Parent class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.
 
@@ -344,7 +344,7 @@ class Ga4mp(object):
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
 
-class gtagMP(Ga4mp):
+class GtagMP(BaseGa4mp):
     """
     Subclass for users of gtag. See `Ga4mp` parent class for examples.
 
@@ -373,7 +373,7 @@ class gtagMP(Ga4mp):
         """
         return "%0.10d" % random.randint(0,9999999999) + "." + str(int(time.time()))
 
-class firebaseMP(Ga4mp):
+class FirebaseMP(BaseGa4mp):
     """
     Subclass for users of Firebase. See `Ga4mp` parent class for examples.
 
