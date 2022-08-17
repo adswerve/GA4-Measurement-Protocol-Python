@@ -344,10 +344,10 @@ class BaseGa4mp(object):
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
 
-    def _build_url(self):
+    def _build_url(self, domain):
         raise NotImplementedError()
 
-    def _build_request(self):
+    def _build_request(self, batch):
         raise NotImplementedError()
 
 class GtagMP(BaseGa4mp):
