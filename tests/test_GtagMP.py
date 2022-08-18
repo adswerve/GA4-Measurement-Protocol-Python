@@ -2,6 +2,8 @@ import unittest
 import json
 import logging
 import os, sys
+import pytest
+from testfixtures import log_capture
 
 sys.path.append(
     os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
@@ -42,6 +44,74 @@ class TestGtagMPClient(unittest.TestCase):
         GtagMP._check_params(self, events_correct)
 
         assert True
+    
+    def test_check_params_2_events_not_in_a_list(self):
+        events_not_a_list = (
+            {
+                'name': 'level_end',
+                'params': {
+                    'level_name': 'First',
+                    'success': 'True'
+                }
+            },
+            {
+                'name': 'level_up',
+                'params': {
+                    'character': 'The Dude',
+                    'level': 'Second'
+                }
+            }
+        )
+        with pytest.raises(AssertionError, match="events should be a list"):
+            GtagMP._check_params(self, events_not_a_list)
+    
+    def test_check_params_3_event_not_a_dict(self):
+        event_not_a_dict = [
+            [
+                'name',
+                'level_up',
+                'params',
+                {
+                    'character': 'The Dude',
+                    'level': 'Second'
+                }
+            ]
+        ]
+
+        with pytest.raises(AssertionError, match="each event should be a dictionary"):
+            GtagMP._check_params(self, event_not_a_dict)
+
+    def test_check_params_4_events_incorrect_key(self):
+        event_incorrect_key = [
+            {
+                'incorrect_key': 'level_up',
+                'params': {
+                    'character': 'The Dude',
+                    'level': 'Second'
+                }
+            }
+        ]
+
+        with pytest.raises(AssertionError, match='each event should have a "name" key'):
+            GtagMP._check_params(self, event_incorrect_key)
+
+    @log_capture()
+    def test_check_params_5_warning(self, capture):
+        event_should_get_warning = [
+            {
+                'name': 'level_end',
+                'params': {
+                    'level_name': 'First',
+                    'incorrect_key': 'True'
+                }
+            }
+        ]
+
+        GtagMP._check_params(self, event_should_get_warning)
+
+        expected_log = ('ga4mp.ga4mp', 'WARNING', "WARNING: Event parameters do not match event type.\nFor level_end event type, the correct parameter(s) are ['level_name', 'success'].\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+
+        capture.check(expected_log)
 
 if __name__ == "__main__":
     unittest.main()
