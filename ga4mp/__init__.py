@@ -1,3 +1,3 @@
-from ga4mp.ga4mp import Ga4mp
+from ga4mp.ga4mp import GtagMP, FirebaseMP
 
-__all__ = ['Ga4mp']
+__all__ = ['GtagMP','FirebaseMP']
