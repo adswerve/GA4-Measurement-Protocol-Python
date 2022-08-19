@@ -23,7 +23,7 @@ except:
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-class TestGtagMPClient(unittest.TestCase):
+class TestGtagMPClientInternal(unittest.TestCase):
     def setUp(self):
         self.gtag = GtagMP(api_secret=API_SECRET, measurement_id=MEASUREMENT_ID, client_id=CLIENT_ID)
 
