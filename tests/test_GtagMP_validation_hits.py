@@ -3,7 +3,6 @@ import json
 import logging
 import os, sys
 import datetime
-from testfixtures import log_capture
 
 sys.path.append(
     os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
