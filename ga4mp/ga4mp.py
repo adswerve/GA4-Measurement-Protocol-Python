@@ -56,10 +56,13 @@ class BaseGa4mp(object):
     >>> ga.postponed_send()
     """
 
-    def __init__(self, api_secret):
+    def __init__(self, api_secret, session_id=None):
         self.api_secret = api_secret
         self._event_list = []
         self._user_properties = {}
+        self._temp_store = {
+            "session_id": session_id or int(time.time())
+            }
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
 
@@ -136,9 +139,7 @@ class BaseGa4mp(object):
 
         params_dict.update(new_name_and_parameters)
 
-    def _http_post(
-        self, batched_event_list, validation_hit=False, postpone=False, date=None
-    ):
+    def _http_post(self, batched_event_list, validation_hit=False, postpone=False, date=None):
         """
         Method to send http POST request to google-analytics.
 
@@ -362,8 +363,8 @@ class GtagMP(BaseGa4mp):
         A unique identifier for a client, representing a specific browser/device.
     """
 
-    def __init__(self, api_secret, measurement_id, client_id):
-        super().__init__(api_secret)
+    def __init__(self, api_secret, measurement_id, client_id, session_id=None):
+        super().__init__(api_secret, session_id)
         self.measurement_id = measurement_id
         self.client_id = client_id
 
@@ -397,8 +398,8 @@ class FirebaseMP(BaseGa4mp):
             * Unity - GetAnalyticsInstanceIdAsync() - https://firebase.google.com/docs/reference/unity/class/firebase/analytics/firebase-analytics#getanalyticsinstanceidasync
     """
 
-    def __init__(self, api_secret, firebase_app_id, app_instance_id):
-        super().__init__(api_secret)
+    def __init__(self, api_secret, firebase_app_id, app_instance_id, session_id=None):
+        super().__init__(api_secret, session_id)
         self.firebase_app_id = firebase_app_id
         self.app_instance_id = app_instance_id
 
