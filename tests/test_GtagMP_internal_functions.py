@@ -122,29 +122,5 @@ class TestGtagMPClient(unittest.TestCase):
 
         self.assertRegex(test_cid,r"\d{10}\.\d{10}")
 
-    def test_http_status_code(self):
-        # Build test events list
-        event_list = [
-            {
-                'name': 'level_end',
-                'params': {
-                    'level_name': 'First',
-                    'success': 'True'
-                }
-            },
-            {
-                'name': 'level_up',
-                'params': {
-                    'character': 'The Dude',
-                    'level': 'Second'
-                }
-            }
-        ]
-
-        status_code = self.gtag._http_post(event_list, validation_hit=True)
-
-        acceptable_http_status_codes = [200, 201, 204]
-        assert status_code in acceptable_http_status_codes
-
 if __name__ == "__main__":
     unittest.main()
