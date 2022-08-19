@@ -57,11 +57,13 @@ class BaseGa4mp(object):
     """
 
     def __init__(self, api_secret, session_id=None):
+        initialization_time = time.time()
         self.api_secret = api_secret
         self._event_list = []
         self._user_properties = {}
         self._temp_store = {
-            "session_id": session_id or int(time.time())
+            "session_id": session_id or int(initialization_time),
+            "last_interaction_time_msec": int(initialization_time * 1000)
             }
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
@@ -96,6 +98,7 @@ class BaseGa4mp(object):
         # check for any missing or invalid parameters among automatically collected and recommended event types
         self._check_params(events)
         self._check_date_not_in_future(date)
+        self._add_session_id_and_engagement_time(events)
 
         if postpone is True:
             # build event list to send later
@@ -253,6 +256,26 @@ class BaseGa4mp(object):
                         logger.warning(
                             f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
                         )
+
+    def get_session_id(self):
+        """
+        Method to surface the object's session ID more easily if end user needs to persist it.
+        """
+        return self._temp_store["session_id"]
+
+    def _add_session_id_and_engagement_time(self, events):
+        """
+        Method to add the session_id and engagement_time_msec parameter to all events.
+        """
+        for event in events:
+            current_time_in_milliseconds = int(time.time() * 1000)
+
+            event_params = event["params"]
+            if "session_id" not in event_params.keys():
+                event_params["session"] = self.get_session_id()
+            if "engagement_time_msec" not in event_params.keys():
+                event_params["engagement_time_msec"] = current_time_in_milliseconds - self._temp_store["last_interaction_time_msec"]
+                self._temp_store["last_interaction_time_msec"] = current_time_in_milliseconds
 
     def set_user_property(self, property, value):
 
