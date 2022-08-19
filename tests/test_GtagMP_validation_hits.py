@@ -2,7 +2,7 @@ import unittest
 import json
 import logging
 import os, sys
-import pytest
+import datetime
 from testfixtures import log_capture
 
 sys.path.append(
@@ -45,11 +45,26 @@ class TestGtagMPClientValidation(unittest.TestCase):
             }
         ]
 
+        self.acceptable_http_status_codes = [200, 201, 204]
+
     def test_http_status_code(self):
         status_code = self.gtag._http_post(self.event_list, validation_hit=True)
 
-        acceptable_http_status_codes = [200, 201, 204]
-        assert status_code in acceptable_http_status_codes
+        assert status_code in self.acceptable_http_status_codes
+
+    def test_http_status_code_with_datetime_arg(self):
+        dt = datetime.datetime.now()
+
+        status_code = self.gtag._http_post(self.event_list, validation_hit=True, date=dt)
+
+        assert status_code in self.acceptable_http_status_codes
+
+    def test_http_status_code_with_datetime_delta(self):
+        dt = datetime.datetime.now() - datetime.timedelta(hours=1)
+
+        status_code = self.gtag._http_post(self.event_list, validation_hit=True, date=dt)
+
+        assert status_code in self.acceptable_http_status_codes
 
 if __name__ == "__main__":
     unittest.main()
