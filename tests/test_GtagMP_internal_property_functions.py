@@ -21,14 +21,28 @@ except:
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-class TestGtagMPClientInternalUtilityFunctions(unittest.TestCase):
+class TestGtagMPClientInternalPropertyFunctions(unittest.TestCase):
     def setUp(self):
         self.gtag = GtagMP(api_secret=API_SECRET, measurement_id=MEASUREMENT_ID, client_id=CLIENT_ID)
 
-    def test_create_client_id(self):
-        test_cid = self.gtag.random_client_id()
+    def test_add_user_property(self):
+        self.gtag.set_user_property("user_id","Grogu")
+        
+        self.assertEqual(self.gtag._user_properties["user_id"], "Grogu")
 
-        self.assertRegex(test_cid,r"\d{10}\.\d{10}")
+    def test_add_multiple_user_properties(self):
+        self.gtag.set_user_property("user_id","Grogu")
+        self.gtag.set_user_property("region","Outer Rim")
+
+        self.assertEqual(len(self.gtag._user_properties), 2)
+        
+    def test_delete_user_property(self):
+        self.gtag.set_user_property("user_id","Grogu")
+        self.gtag.set_user_property("region","Outer Rim")
+
+        self.gtag.delete_user_property("user_id")
+
+        self.assertFalse("user_id" in self.gtag._user_properties.keys())
 
 if __name__ == "__main__":
     unittest.main()
