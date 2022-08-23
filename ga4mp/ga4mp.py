@@ -61,10 +61,10 @@ class BaseGa4mp(object):
         self.api_secret = api_secret
         self._event_list = []
         self._user_properties = {}
-        self._temp_store = {
+        self._temp_store = { # TODO: Is this complicating things too much?
             "session_id": session_id or int(initialization_time),
             "last_interaction_time_msec": int(initialization_time * 1000)
-            }
+        }
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
 
@@ -274,6 +274,7 @@ class BaseGa4mp(object):
             if "session_id" not in event_params.keys():
                 event_params["session"] = self.get_session_id()
             if "engagement_time_msec" not in event_params.keys():
+                # TODO: Is there a more elegant way to do this?
                 event_params["engagement_time_msec"] = current_time_in_milliseconds - self._temp_store["last_interaction_time_msec"] if current_time_in_milliseconds > self._temp_store["last_interaction_time_msec"] else 0
                 self._temp_store["last_interaction_time_msec"] = current_time_in_milliseconds
 
@@ -387,7 +388,7 @@ class GtagMP(BaseGa4mp):
     """
 
     def __init__(self, api_secret, measurement_id, client_id, session_id=None):
-        super().__init__(api_secret, session_id)
+        super().__init__(api_secret, session_id) # TODO: Did I do this right?
         self.measurement_id = measurement_id
         self.client_id = client_id
 
