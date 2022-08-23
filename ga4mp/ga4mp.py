@@ -274,7 +274,7 @@ class BaseGa4mp(object):
             if "session_id" not in event_params.keys():
                 event_params["session"] = self.get_session_id()
             if "engagement_time_msec" not in event_params.keys():
-                event_params["engagement_time_msec"] = current_time_in_milliseconds - self._temp_store["last_interaction_time_msec"]
+                event_params["engagement_time_msec"] = current_time_in_milliseconds - self._temp_store["last_interaction_time_msec"] if current_time_in_milliseconds > self._temp_store["last_interaction_time_msec"] else 0
                 self._temp_store["last_interaction_time_msec"] = current_time_in_milliseconds
 
     def set_user_property(self, property, value):
