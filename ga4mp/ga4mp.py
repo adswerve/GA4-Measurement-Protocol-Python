@@ -7,6 +7,7 @@
 # assistance in strategy, implementation, or auditing existing work.
 ###############################################################################
 
+from ast import IsNot
 import json
 import logging
 import urllib.request
@@ -14,9 +15,11 @@ import time
 import datetime
 import random
 from ga4mp.utils import params_dict
+from store import BaseStore # TODO: create new file with BaseStore, MemStore, and FileStore classes
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 
 
 class BaseGa4mp(object):
@@ -56,12 +59,14 @@ class BaseGa4mp(object):
     >>> ga.postponed_send()
     """
 
-    def __init__(self, api_secret, session_id=None):
+    def __init__(self, api_secret, store=None, session_id=None):
         initialization_time = time.time()
         self.api_secret = api_secret
         self._event_list = []
         self._user_properties = {}
-        self._temp_store = { # TODO: Is this complicating things too much?
+        assert isinstance(store,BaseStore) or store is None, "store must inherit from BaseStore"
+        self._store = store or BaseStore(xyz)
+        self._temp_store = {
             "session_id": session_id or int(initialization_time),
             "last_interaction_time_msec": int(initialization_time * 1000)
         }
@@ -239,7 +244,7 @@ class BaseGa4mp(object):
 
         for event in events:
 
-            assert type(event) == dict, "each event should be a dictionary"
+            assert isinstance(event, dict), "each event should be an instance of a dictionary"
 
             assert "name" in event, 'each event should have a "name" key'
 
@@ -272,9 +277,8 @@ class BaseGa4mp(object):
 
             event_params = event["params"]
             if "session_id" not in event_params.keys():
-                event_params["session"] = self.get_session_id()
+                event_params["session_id"] = self.get_session_id()
             if "engagement_time_msec" not in event_params.keys():
-                # TODO: Is there a more elegant way to do this?
                 event_params["engagement_time_msec"] = current_time_in_milliseconds - self._temp_store["last_interaction_time_msec"] if current_time_in_milliseconds > self._temp_store["last_interaction_time_msec"] else 0
                 self._temp_store["last_interaction_time_msec"] = current_time_in_milliseconds
 
@@ -388,7 +392,7 @@ class GtagMP(BaseGa4mp):
     """
 
     def __init__(self, api_secret, measurement_id, client_id, session_id=None):
-        super().__init__(api_secret, session_id) # TODO: Did I do this right?
+        super().__init__(api_secret, session_id)
         self.measurement_id = measurement_id
         self.client_id = client_id
 
