@@ -24,7 +24,11 @@ class Event(dict):
 
     def get_event_params(self):
         return self.get("params")
-        
+
+    def delete_event_param(self, name):
+        # Since only 25 event parameters are allowed, this will allow the user to delete a parameter if necessary.
+        self["params"].pop(name, None)
+
     def add_item(self, item):
         if not isinstance(item, dict):
             raise ValueError("'item' must be an instance of a dictionary.")
