@@ -15,6 +15,8 @@ import time
 import datetime
 import random
 from ga4mp.utils import params_dict
+from event import Event
+from item import Item
 from store import BaseStore # TODO: create new file with BaseStore, MemStore, and FileStore classes
 
 logger = logging.getLogger(__name__)
