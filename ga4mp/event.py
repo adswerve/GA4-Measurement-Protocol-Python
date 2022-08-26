@@ -22,6 +22,9 @@ class Event(dict):
             raise RuntimeError("Event cannot contain more than 25 parameters.")
         self["params"][name] = value
 
+    def get_event_params(self):
+        return self.get("params")
+        
     def add_item(self, item):
         if not isinstance(item, dict):
             raise ValueError("'item' must be an instance of a dictionary.")
