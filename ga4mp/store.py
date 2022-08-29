@@ -22,44 +22,45 @@ class BaseStore(dict):
         if key not in self.keys():
             self[key] = {}
 
-    def _set(self, type, name, value):
-        # Helper function to set a single parameter (user or session).
-        self._check_exists(type)
-        self[type][name] = value
+    def _set(self, name, value, param_type=None):
+        # Helper function to set a single parameter (user or session)...
+        if param_type is not None:
+            self._check_exists(key=param_type)
+            self[param_type][name] = value
 
-    def _get_one(self, type, name):
+    def _get_one(self, param_type, name):
         # Helper function to get a single parameter value (user or session).
-        self._check_exists(type)
-        return self[type].get(name, None)
+        self._check_exists(key=param_type)
+        return self[param_type].get(name, None)
 
-    def _get_all(self, type=None):
+    def _get_all(self, param_type=None):
         # Helper function to get all user or session parameters - or the entire dictionary if not specified.
-        if type is not None:
-            return self[type]
+        if param_type is not None:
+            return self[param_type]
         else:
             return self
 
     # While redundant, the following make sure the distinction between session and user items is easier for the end user.
     def set_user_property(self, name, value):
-        self._set("user_properties", name, value)
+        self._set(param_type="user_properties", name=name, value=value)
 
     def get_user_property(self, name):
-        self.get_one("user_properties", name)
+        self.get_one(param_type="user_properties", name=name)
 
     def get_all_user_properties(self):
-        self._get_all("user_properties")
+        self._get_all(param_type="user_properties")
 
     def clear_user_properties(self):
         self["user_properties"] = {}
 
     def set_session_parameter(self, name, value):
-        self._set("session_parameters", name, value)
+        self._set(param_type="session_parameters", name=name, value=value)
 
     def get_session_parameter(self, name):
-        self.get_one("session_parameters", name)
+        self.get_one(param_type="session_parameters", name=name)
 
     def get_all_session_parameters(self):
-        self._get_all("session_parameters")
+        self._get_all(param_type="session_parameters")
 
     def clear_session_parameters(self):
         self["session_parameters"] = {}
