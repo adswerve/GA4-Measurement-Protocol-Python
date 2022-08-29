@@ -64,6 +64,7 @@ class BaseStore(dict):
     def clear_session_parameters(self):
         self["session_parameters"] = {}
 
+    # Similar functions for other items the user wants to store that don't fit the other two categories.
     def set_other_parameter(self, name, value):
         self._set(param_type="other", name=name, value=value)
 
