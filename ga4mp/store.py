@@ -49,6 +49,9 @@ class BaseStore(dict):
     def get_all_user_properties(self):
         self._get_all("user_properties")
 
+    def clear_user_properties(self):
+        self["user_properties"] = {}
+
     def set_session_parameter(self, name, value):
         self._set("session_parameters", name, value)
 
@@ -57,6 +60,9 @@ class BaseStore(dict):
 
     def get_all_session_parameters(self):
         self._get_all("session_parameters")
+
+    def clear_session_parameters(self):
+        self["session_parameters"] = {}
 
 class DictStore(BaseStore):
     # Class for working with dictionaries that persist for the life of the class.
