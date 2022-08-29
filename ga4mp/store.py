@@ -59,6 +59,7 @@ class BaseStore(dict):
         self._get_all("session_parameters")
 
 class DictStore(BaseStore):
+    # Class for working with dictionaries that persist for the life of the class.
     def __init__(self):
         super().__init__()
 
@@ -71,6 +72,7 @@ class DictStore(BaseStore):
         self._get_all()
 
 class FileStore(BaseStore):
+    # Class for working with dictionaries that get saved to a JSON file.
     def __init__(self, data_location):
         super().__init__()
         try:
