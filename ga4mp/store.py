@@ -70,9 +70,6 @@ class DictStore(BaseStore):
         # Give the user back what's in the dictionary so they can decide how to save it.
         self._get_all()
 
-    def set_user_property(self, name, value):
-        pass
-
 class FileStore(BaseStore):
     def __init__(self, data_location):
         super().__init__()
@@ -96,7 +93,3 @@ class FileStore(BaseStore):
                 json.dump(self, outfile)
         except:
             logger.info(f"Failed to save file at location: {save_location}")
-
-    def set_user_property(self, name, value):
-        pass
-        
