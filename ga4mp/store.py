@@ -1,3 +1,9 @@
+import json
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class BaseStore(dict):
     def __init__(self):
         self = {
@@ -57,10 +63,12 @@ class DictStore(BaseStore):
         super().__init__()
 
     def load(self, data):
-        pass
+        assert isinstance(data, dict), "loaded data must inherit from dict"
+        self = data
 
     def save(self):
-        pass
+        # Give the user back what's in the dictionary so they can decide how to save it.
+        self._get_all()
 
     def set_user_property(self, name, value):
         pass
@@ -68,12 +76,26 @@ class DictStore(BaseStore):
 class FileStore(BaseStore):
     def __init__(self, data_location):
         super().__init__()
+        try:
+            self.load(data_location)
+        except:
+            logger.info(f"Failed to find file at location: {data_location}")
 
     def load(self, data_location):
-        pass
+        # Function to get data from the specified data location, then make sure the FileStore knows where the data is expected.
+        with open(data_location, "r") as json_file:
+            self = json.load(json_file)
+        self["data_location"] = data_location
 
     def save(self, data_location=None):
-        pass
+        # Function to save the current dictionary to a JSON file at the specified location.
+        try:
+            save_location = data_location or self["data_location"]
+            self["data_location"] = save_location
+            with open(save_location, "w") as outfile:
+                json.dump(self, outfile)
+        except:
+            logger.info(f"Failed to save file at location: {save_location}")
 
     def set_user_property(self, name, value):
         pass
