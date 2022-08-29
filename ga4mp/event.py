@@ -18,8 +18,8 @@ class Event(dict):
             raise ValueError("Event parameter value cannot exceed 100 characters.")
         if "params" not in self.keys():
             self["params"] = {}
-        if len(self["params"]) >= 25:
-            raise RuntimeError("Event cannot contain more than 25 parameters.")
+        if len(self["params"]) >= 100:
+            raise RuntimeError("Event cannot contain more than 100 parameters.")
         self["params"][name] = value
 
     def get_event_params(self):
