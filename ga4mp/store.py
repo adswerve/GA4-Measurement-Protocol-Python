@@ -22,11 +22,10 @@ class BaseStore(dict):
         if key not in self.keys():
             self[key] = {}
 
-    def _set(self, name, value, param_type=None):
-        # Helper function to set a single parameter (user or session)...
-        if param_type is not None:
-            self._check_exists(key=param_type)
-            self[param_type][name] = value
+    def _set(self, param_type, name, value):
+        # Helper function to set a single parameter (user or session or other).
+        self._check_exists(key=param_type)
+        self[param_type][name] = value
 
     def _get_one(self, param_type, name):
         # Helper function to get a single parameter value (user or session).
@@ -45,7 +44,7 @@ class BaseStore(dict):
         self._set(param_type="user_properties", name=name, value=value)
 
     def get_user_property(self, name):
-        self.get_one(param_type="user_properties", name=name)
+        self._get_one(param_type="user_properties", name=name)
 
     def get_all_user_properties(self):
         self._get_all(param_type="user_properties")
@@ -57,13 +56,25 @@ class BaseStore(dict):
         self._set(param_type="session_parameters", name=name, value=value)
 
     def get_session_parameter(self, name):
-        self.get_one(param_type="session_parameters", name=name)
+        self._get_one(param_type="session_parameters", name=name)
 
     def get_all_session_parameters(self):
         self._get_all(param_type="session_parameters")
 
     def clear_session_parameters(self):
         self["session_parameters"] = {}
+
+    def set_other_parameter(self, name, value):
+        self._set(param_type="other", name=name, value=value)
+
+    def get_other_parameter(self, name):
+        self._get_one(param_type="other", name=name)
+
+    def get_all_other_parameters(self):
+        self._get_all(param_type="other")
+
+    def clear_other_parameters(self):
+        self["other"] = {}
 
 class DictStore(BaseStore):
     # Class for working with dictionaries that persist for the life of the class.
