@@ -62,7 +62,6 @@ class BaseGa4mp(object):
         initialization_time = time.time()
         self.api_secret = api_secret
         self._event_list = []
-        self._user_properties = {}
         assert isinstance(store,dict) or store is None, "store must inherit from dict"
         self.store = store or DictStore() # Default to DictStore if user did not supply one.
         self.store.set_session_parameter("session_id", int(initialization_time))
