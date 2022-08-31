@@ -58,19 +58,31 @@ class BaseGa4mp(object):
     >>> ga.postponed_send()
     """
 
-    def __init__(self, api_secret, store=None, session_id=None):
-        initialization_time = time.time()
+    def __init__(self, api_secret):
+        self._initialization_time = time.time()
         self.api_secret = api_secret
         self._event_list = []
-        assert isinstance(store,dict) or store is None, "store must inherit from dict"
-        self.store = store or DictStore() # Default to DictStore if user did not supply one.
-        self.store.set_session_parameter("session_id", session_id or int(initialization_time))
-        self.store.set_session_parameter("last_interaction_time_msec", int(initialization_time * 1000))
+        # Because it's required, initialize a starter store that the user can overwrite if desired.
+        self.create_store()
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
 
-    def create_new_store(self):
-        pass
+    def create_store(self, use_file=False, store=None, session_id=None, data_location=None):
+        if not use_file:
+            self.store = DictStore()
+            if store is not None:
+                self.store.load(data=store)
+        else:
+            self.store = FileStore(data_location=data_location)
+
+        # session_id is required, so first check if a manual one was supplied...
+        if session_id is not None:
+            self.store.set_session_parameter(name="session_id", value=session_id)
+        # ...then set one for the user if one isn't already present in the store.
+        if self.store.get_session_parameter("session_id") is None:
+            self.store.set_session_parameter(name="session_id", value=int(self._initialization_time))
+        # last_interaction_time_msec factors into the required engagement_time_msec event parameter
+        self.store.set_session_parameter("last_interaction_time_msec", int(self._initialization_time * 1000))
 
     def send(self, events, validation_hit=False, postpone=False, date=None):
         """
@@ -359,8 +371,8 @@ class GtagMP(BaseGa4mp):
         A unique identifier for a client, representing a specific browser/device.
     """
 
-    def __init__(self, api_secret, measurement_id, client_id, session_id=None):
-        super().__init__(api_secret, session_id)
+    def __init__(self, api_secret, measurement_id, client_id,):
+        super().__init__(api_secret)
         self.measurement_id = measurement_id
         self.client_id = client_id
 
@@ -394,8 +406,8 @@ class FirebaseMP(BaseGa4mp):
             * Unity - GetAnalyticsInstanceIdAsync() - https://firebase.google.com/docs/reference/unity/class/firebase/analytics/firebase-analytics#getanalyticsinstanceidasync
     """
 
-    def __init__(self, api_secret, firebase_app_id, app_instance_id, session_id=None):
-        super().__init__(api_secret, session_id)
+    def __init__(self, api_secret, firebase_app_id, app_instance_id):
+        super().__init__(api_secret)
         self.firebase_app_id = firebase_app_id
         self.app_instance_id = app_instance_id
 
