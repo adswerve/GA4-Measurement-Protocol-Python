@@ -7,7 +7,6 @@
 # assistance in strategy, implementation, or auditing existing work.
 ###############################################################################
 
-from ast import IsNot
 import json
 import logging
 import urllib.request
@@ -17,12 +16,10 @@ import random
 from ga4mp.utils import params_dict
 from event import Event
 from item import Item
-from store import BaseStore # TODO: create new file with BaseStore, MemStore, and FileStore classes
+from store import DictStore, FileStore
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
 
 class BaseGa4mp(object):
     """
@@ -66,12 +63,10 @@ class BaseGa4mp(object):
         self.api_secret = api_secret
         self._event_list = []
         self._user_properties = {}
-        assert isinstance(store,BaseStore) or store is None, "store must inherit from BaseStore"
-        self._store = store or BaseStore(xyz)
-        self._temp_store = {
-            "session_id": session_id or int(initialization_time),
-            "last_interaction_time_msec": int(initialization_time * 1000)
-        }
+        assert isinstance(store,dict) or store is None, "store must inherit from dict"
+        self.store = store or DictStore() # Default to DictStore if user did not supply one.
+        self.store.set_session_parameter("session_id", int(initialization_time))
+        self.store.set_session_parameter("last_interaction_time_msec", int(initialization_time * 1000))
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
 
