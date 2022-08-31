@@ -283,15 +283,16 @@ class BaseGa4mp(object):
         ----------
         hit : dict
         """
-        for key in self._user_properties:
+
+        for key in self.store.get_all_user_properties():
             try:
                 if key in ["user_id", "non_personalized_ads"]:
-                    hit.update({key: self._user_properties[key]})
+                    hit.update({key: self.store.get_user_property(key)})
                 else:
                     if "user_properties" not in hit.keys():
                         hit.update({"user_properties": {}})
                     hit["user_properties"].update(
-                        {key: {"value": self._user_properties[key]}}
+                        {key: {"value": self.store.get_user_property(key)}}
                     )
             except:
                 logger.info(f"Failed to add user property to outgoing hit: {key}")
