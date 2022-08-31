@@ -263,7 +263,7 @@ class BaseGa4mp(object):
         """
         Method to surface the object's session ID more easily if end user needs to persist it.
         """
-        return self._temp_store["session_id"]
+        return self.store.get_session_parameter("session_id")
 
     def _add_session_id_and_engagement_time(self, events):
         """
