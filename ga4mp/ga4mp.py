@@ -259,12 +259,6 @@ class BaseGa4mp(object):
                             f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
                         )
 
-    def get_session_id(self):
-        """
-        Method to surface the object's session ID more easily if end user needs to persist it.
-        """
-        return self.store.get_session_parameter("session_id")
-
     def _add_session_id_and_engagement_time(self, events):
         """
         Method to add the session_id and engagement_time_msec parameter to all events.
@@ -274,7 +268,7 @@ class BaseGa4mp(object):
 
             event_params = event["params"]
             if "session_id" not in event_params.keys():
-                event_params["session_id"] = self.get_session_id()
+                event_params["session_id"] = self.store.get_session_parameter("session_id")
             if "engagement_time_msec" not in event_params.keys():
                 event_params["engagement_time_msec"] = current_time_in_milliseconds - self._temp_store["last_interaction_time_msec"] if current_time_in_milliseconds > self._temp_store["last_interaction_time_msec"] else 0
                 self._temp_store["last_interaction_time_msec"] = current_time_in_milliseconds
