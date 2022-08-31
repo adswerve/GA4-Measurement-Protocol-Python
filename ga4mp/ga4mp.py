@@ -274,33 +274,6 @@ class BaseGa4mp(object):
                 event_params["engagement_time_msec"] = current_time_in_milliseconds - last_interaction_time if current_time_in_milliseconds > last_interaction_time else 0
                 self.store.set_session_parameter(name="last_interaction_time_msec", value=current_time_in_milliseconds)
 
-    def set_user_property(self, property, value):
-
-        """
-        Method to set user_id, user_properties, non_personalized_ads
-
-        Parameters
-        ----------
-        property : string
-        value: dependent on property (user_id, user_properties - string, non_personalized_ads - bool)
-        """
-        self._user_properties.update({property: value})
-
-    def delete_user_property(self, property):
-
-        """
-        Method to remove user_id, user_properties, non_personalized_ads
-
-        Parameters
-        ----------
-        property : string
-        """
-        try:
-            if property in self._user_properties.keys():
-                self._user_properties.pop(property)
-        except:
-            logger.info(f"Failed to delete user property: {property}")
-
     def _add_user_props_to_hit(self, hit):
 
         """
