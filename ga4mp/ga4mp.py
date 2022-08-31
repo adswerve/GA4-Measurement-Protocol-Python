@@ -64,10 +64,13 @@ class BaseGa4mp(object):
         self._event_list = []
         assert isinstance(store,dict) or store is None, "store must inherit from dict"
         self.store = store or DictStore() # Default to DictStore if user did not supply one.
-        self.store.set_session_parameter("session_id", int(initialization_time))
+        self.store.set_session_parameter("session_id", session_id or int(initialization_time))
         self.store.set_session_parameter("last_interaction_time_msec", int(initialization_time * 1000))
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
+
+    def create_new_store(self):
+        pass
 
     def send(self, events, validation_hit=False, postpone=False, date=None):
         """
