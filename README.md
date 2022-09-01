@@ -47,6 +47,25 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
  "FIREBASE_APP_ID": "<YOUR_FIREBASE_APP_ID>",
  "APP_INSTANCE_ID": "<YOUR_APP_INSTANCE_ID>"}
 ```
+
+## Memory Storage
+In order to solve questions around persistence, this library includes two options for storage:
+* `DictStore`, a built-in dictionary class that will persist for the life of the tracking object
+* `FileStore`, a built-in dictionary class that will read to and save to a JSON file in a specified location
+
+Use of one of these two is required for session parameters (e.g., `session_id`) and user properties, so initialization of the tracking object will also initialize a default `DictStore`. If you wish to load in your own dictionary, load a JSON file, or opt to use `FileStore` instead, you may do so immediately after initializing the tracking object.
+
+### Built-In Commands (DictStore Specific)
+* `load(data)`: Overwrite the current contents of the dictionary. `data` must be an instance of a dictionary.
+* `save()`: Returns the current contents of the dictionary so that you can save them outside of the tracking object.
+
+### Built-In Commands (FileStore Specific)
+* `load(data_location)`: Overwrite the current contents of the tracking object's dictionary with the contents of a JSON file at the given `data_location`. If a JSON file does not exist, it will try to create a new JSON file containing an empty object (i.e., `{}`). When using make sure `data_location` includes the path to the file as well as its name and extension (e.g., `./temp/store.json`).
+
+### Built-In Commands (Both Classes)
+
+## Events and Ecommerce Items
+
 The following represents a simple example of a custom event sent to GA4:
 ``` python
 from ga4mp import gtagMP, firebaseMP
