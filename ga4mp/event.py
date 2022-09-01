@@ -1,3 +1,5 @@
+from item import Item
+
 class Event(dict):
     def __init__(self, name):
         self.set_event_name(name)
@@ -28,6 +30,9 @@ class Event(dict):
     def delete_event_param(self, name):
         # Since only 25 event parameters are allowed, this will allow the user to delete a parameter if necessary.
         self["params"].pop(name, None)
+
+    def create_new_item(self, item_id=None, item_name=None):
+        return Item(item_id=item_id, item_name=item_name)
 
     def add_item_to_event(self, item):
         if not isinstance(item, dict):
