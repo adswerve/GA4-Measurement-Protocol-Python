@@ -29,7 +29,7 @@ class Event(dict):
         # Since only 25 event parameters are allowed, this will allow the user to delete a parameter if necessary.
         self["params"].pop(name, None)
 
-    def add_item(self, item):
+    def add_item_to_event(self, item):
         if not isinstance(item, dict):
             raise ValueError("'item' must be an instance of a dictionary.")
         if "items" not in self["params"].keys():
