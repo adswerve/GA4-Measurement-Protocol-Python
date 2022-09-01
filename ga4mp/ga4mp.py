@@ -15,7 +15,6 @@ import datetime
 import random
 from ga4mp.utils import params_dict
 from event import Event
-from item import Item
 from store import DictStore, FileStore
 
 logger = logging.getLogger(__name__)
@@ -83,6 +82,9 @@ class BaseGa4mp(object):
             self.store.set_session_parameter(name="session_id", value=int(self._initialization_time))
         # last_interaction_time_msec factors into the required engagement_time_msec event parameter
         self.store.set_session_parameter("last_interaction_time_msec", int(self._initialization_time * 1000))
+
+    def create_new_event(self, name):
+        return Event(name=name)
 
     def send(self, events, validation_hit=False, postpone=False, date=None):
         """
