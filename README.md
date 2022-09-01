@@ -61,6 +61,7 @@ Use of one of these two is required for session parameters (e.g., `session_id`) 
 
 ### Built-In Commands (FileStore Specific)
 * `load(data_location)`: Overwrite the current contents of the tracking object's dictionary with the contents of a JSON file at the given `data_location`. If a JSON file does not exist, it will try to create a new JSON file containing an empty object (i.e., `{}`). When using make sure `data_location` includes the path to the file as well as its name and extension (e.g., `./temp/store.json`).
+* `save(data_location)`: Try to overwrite the JSON file at the given `data_location` with the current contents of the tracking object's dictionary. The `data_location` argument is optional: if not supplied, this will try to save to the same location used in the `load(data_location)` command.
 
 ### Built-In Commands (Both Classes)
 
