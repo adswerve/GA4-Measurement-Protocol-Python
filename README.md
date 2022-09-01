@@ -51,7 +51,7 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
 ## Memory Storage
 In order to solve questions around persistence, this library includes two options for storage:
 * `DictStore`, a built-in dictionary class that will persist for the life of the tracking object
-* `FileStore`, a built-in dictionary class that will read to and save to a JSON file in a specified location
+* `FileStore`, a built-in dictionary class that will read from and save to a JSON file in a specified location
 
 Use of one of these two is required for session parameters (e.g., `session_id`) and user properties, so initialization of the tracking object will also initialize a default `DictStore`. 
 
