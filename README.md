@@ -64,6 +64,27 @@ Use of one of these two is required for session parameters (e.g., `session_id`) 
 * `save(data_location)`: Try to overwrite the JSON file at the given `data_location` with the current contents of the tracking object's dictionary. The `data_location` argument is optional: if not supplied, this will try to save to the same location used in the `load(data_location)` command.
 
 ### Built-In Commands (Both Classes)
+> **NOTE**: The memory storage classes operate on 3 different types of data: **user properties**, which are sent to GA/Firebase with all events, **session parameters**, which should temporarily store information relevant to a single session (e.g., a session ID or the last time an event was sent), and **other**, for anything else you might want to save that wouldn't be sent to GA/Firebase.
+
+Use one of the following to set a new `value` with key `name` as a user property, session parameter, or other type of stored data:
+* `set_user_property(name, value)`
+* `set_session_parameter(name, value)`
+* `set_other_parameter(name, value)`
+
+Use one of the following to get the value of key `name` for a user property, session parameter, or other type of stored data:
+* `get_user_property(name)`
+* `get_session_parameter(name)`
+* `get_other_parameter(name)`
+
+Use one of the following to get all keys and values stored as a user property, session parameter, or other type of stored data:
+* `get_all_user_properties()`
+* `get_all_session_parameters()`
+* `get_all_other_parameters()`
+
+Use one of the following to clear all keys and values stored as a user property, session parameter, or other type of stored data:
+* `clear_user_properties()`
+* `clear_session_parameters()`
+* `clear_other_parameters()`
 
 ## Events and Ecommerce Items
 
