@@ -53,7 +53,14 @@ In order to solve questions around persistence, this library includes two option
 * `DictStore`, a built-in dictionary class that will persist for the life of the tracking object
 * `FileStore`, a built-in dictionary class that will read to and save to a JSON file in a specified location
 
-Use of one of these two is required for session parameters (e.g., `session_id`) and user properties, so initialization of the tracking object will also initialize a default `DictStore`. If you wish to load in your own dictionary, load a JSON file, or opt to use `FileStore` instead, you may do so immediately after initializing the tracking object.
+Use of one of these two is required for session parameters (e.g., `session_id`) and user properties, so initialization of the tracking object will also initialize a default `DictStore`. 
+
+If you wish to load in your own dictionary, load a JSON file, or opt to use `FileStore` instead, you may do so immediately after initializing the tracking object. For any of these, use the following command from your tracking object:
+`create_store(use_file, store, session_id, data_location)`
+* `use_file`: This argument defaults to false, so you may omit it if using `DictStore`.
+* `store`: If using `DictStore`, you may supply your own dictionary, which will automatically be used in the `load(data)` command below. Omit this parameter if using `FileStore` or starting from scratch.
+* `session_id`: This session parameter is required for certain types of reporting in GA4/Firebase. If you wish to manually set a session_id, use this parameter. Omitting this will default to any session_id included in a loaded `DictStore` or `FileStore`; however, if one is not available, it will then automatically construct a session_id.
+* `data_location`: If using `FileStore`, you must specify where the JSON file exists (or should be created if not yet existing). See `load(data_location)` command below for more details.
 
 ### Built-In Commands (DictStore Specific)
 * `load(data)`: Overwrite the current contents of the dictionary. `data` must be an instance of a dictionary.
@@ -87,6 +94,7 @@ Use one of the following to clear all keys and values stored as a user property,
 * `clear_other_parameters()`
 
 ## Events and Ecommerce Items
+While you may construct your own events and ecommerce items as dictionaries, the built-in Event and Item classes should eliminate guesswork about how to properly structure them.
 
 The following represents a simple example of a custom event sent to GA4:
 ``` python
