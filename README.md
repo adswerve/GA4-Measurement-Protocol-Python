@@ -143,12 +143,14 @@ ga.postponed_send()
 ga.client_id = ga.random_client_id()
 ```
 
-## How to construct Events
+## Google Developer Documentation
+Some relevant documentation from Google may be found below...
+
+### How to construct Events
 For more information on constructing events, please review the [GA4 Measurement Protocol reference](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference).
 
-## User properties
+### User properties
 For more information on what user properties are in GA4 and what you can do with them, [please review here](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties?client_type=gtag)
 
 ## License
-
 GA4 Measurement Protocol Support for Python is licensed under the [BSD License](./LICENSE).
