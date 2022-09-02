@@ -278,7 +278,7 @@ class BaseGa4mp(object):
                 for parameter in params_dict[event_name]:
                     if parameter not in event_params.keys():
                         logger.warning(
-                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
+                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nThe parameter '{parameter}' triggered this warning.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
                         )
 
     def _add_session_id_and_engagement_time(self, events):
