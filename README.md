@@ -121,7 +121,7 @@ The function will return an Event object with its own functions (see below). Onc
 * `<EVENT>.add_item_to_event(item)`: Add a single Item to the Event's `items` list parameter. Note that `item` is expected to be a single Item object or dictionary - not a list.
 
 ### Creating an Item
-While building an ecommerce event, create a new item by using the following command from your Event object: `create_new_item(item_id, item_name)`
+While building an ecommerce event, create a new item by using the following command from your Event object: `<EVENT>.create_new_item(item_id, item_name)`
 * `item_id`: The product SKU for the specific item.
 * `item_name`: The name for the specific item.
 
