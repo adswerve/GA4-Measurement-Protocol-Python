@@ -48,6 +48,14 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
  "APP_INSTANCE_ID": "<YOUR_APP_INSTANCE_ID>"}
 ```
 
+### Built-In Tracking Object Commands
+* `create_store(use_file, store, session_id, data_location)`: See "Memory Storage" section below.
+* `create_new_event(name)`: See "Creating an Event" section below.
+* `send(events, validation_hit, postpone, date)`: Takes `events` in the form of a list of dictionaries, then sends them as a POST request to GA4 or Firebase. `validation_hit` defaults to `False` and may be safely omitted; setting it to `True` will send the hit to the validation domain. `postpone` defaults to `False` and may also be omitted; if you do not want to send the event immediately, setting `postpone` to `True` will enqueue the POST request. The optional `date` field accepts a Python datetime option for sending historical hits up to 48 hours in the past. **NOTE**: if `date` is specified, `postpone` must be `False` (the default value).
+* `postponed_send()`: Sends all enqueued POST requests (i.e., anything added via `send(events, postpone=True)`), then empties the queue.
+* `append_event_to_params_dict(new_name_and_parameters)`: If necessary, add a new event and its expected parameters to the built-in `utils.py` dictionary. `new_name_and_parameters` takes a dictionary of with single key-value pair. Its key should be the new event name, and its value should be a list of parameters names (e.g., `{'new_name': ['new_param_1', 'new_param_2', 'new_param_3']}`). **NOTE**: the `utils.py` dictionary is used for error checking on automatically collected and recommended event types, and appending your own custom events is necessary only if you want them to be checked against the dictionary when using the `send()` command.
+* `random_client_id()`: If using the `GtagMP` tracking object, this utility function will generate and return a new client ID matching the typical format of 10 random digits and the UNIX timestamp in seconds, joined by a period. This function will not overwrite the client ID on its own, but you may do so yourself using `example_tracker.client_id = example_tracker.random_client_id()`.
+
 ## Memory Storage
 In order to solve questions around persistence, this library includes two options for storage:
 * `DictStore`, a built-in dictionary class that will persist for the life of the tracking object
