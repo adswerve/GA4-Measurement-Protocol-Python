@@ -104,6 +104,13 @@ To create an event, begin by using the following command from your tracking obje
 The function will return an Event object with its own functions (see below). Once the Event is complete, you will be able to pass it to your tracking object's `send()` function within a list of 1 or more events.
 
 ### Built-In Event Commands
+* `set_event_name(name)`: Overwrite the current Event Name of the Event object with `name`.
+* `get_event_name()`: Return the current Event Name of the Event object.
+* `set_event_param(name, value)`: Set a new `value` with key `name` as an Event parameter. If the key already exists, its value will be overwritten; otherwise, a new key-value pair will be added.
+* `get_event_params()`: Return a dictionary of all parameters associated with the Event.
+* `delete_event_param(name)`: Delete a single key-value pair with a key of `name` from the Event's parameters.
+* `create_new_item(item_id, item_name)`: See "Creating an Item" section below.
+* `add_item_to_event(item)`: Add a single Item to the Event's `items` list parameter. Note that `item` is expected to be a single Item object or dictionary - not a list.
 
 ### Creating an Item
 While building an ecommerce event, create a new item by using the following command from your Event object: `create_new_item(item_id, item_name)`
