@@ -7,16 +7,16 @@ class Event(dict):
     def set_event_name(self, name):
         if len(name) > 40:
             raise ValueError("Event name cannot exceed 40 characters.")
-        self["event_name"] = name
+        self["name"] = name
 
     def get_event_name(self):
-        return self.get("event_name")
+        return self.get("name")
 
     def set_event_param(self, name, value):
         # Series of checks to comply with GA4 event collection limits: https://support.google.com/analytics/answer/9267744
         if len(name) > 40:
             raise ValueError("Event parameter name cannot exceed 40 characters.")
-        if len(value) > 100:
+        if len(str(value)) > 100:
             raise ValueError("Event parameter value cannot exceed 100 characters.")
         if "params" not in self.keys():
             self["params"] = {}

@@ -13,9 +13,15 @@ import urllib.request
 import time
 import datetime
 import random
-from ga4mp.utils import params_dict
+from utils import params_dict
 from event import Event
 from store import DictStore, FileStore
+
+
+import os, sys
+sys.path.append(
+    os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
