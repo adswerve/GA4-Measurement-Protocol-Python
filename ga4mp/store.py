@@ -45,10 +45,10 @@ class BaseStore(dict):
         self._set(param_type="user_properties", name=name, value=value)
 
     def get_user_property(self, name):
-        self._get_one(param_type="user_properties", name=name)
+        return self._get_one(param_type="user_properties", name=name)
 
     def get_all_user_properties(self):
-        self._get_all(param_type="user_properties")
+        return self._get_all(param_type="user_properties")
 
     def clear_user_properties(self):
         self["user_properties"] = {}
@@ -57,10 +57,10 @@ class BaseStore(dict):
         self._set(param_type="session_parameters", name=name, value=value)
 
     def get_session_parameter(self, name):
-        self._get_one(param_type="session_parameters", name=name)
+        return self._get_one(param_type="session_parameters", name=name)
 
     def get_all_session_parameters(self):
-        self._get_all(param_type="session_parameters")
+        return self._get_all(param_type="session_parameters")
 
     def clear_session_parameters(self):
         self["session_parameters"] = {}
@@ -70,10 +70,10 @@ class BaseStore(dict):
         self._set(param_type="other", name=name, value=value)
 
     def get_other_parameter(self, name):
-        self._get_one(param_type="other", name=name)
+        return self._get_one(param_type="other", name=name)
 
     def get_all_other_parameters(self):
-        self._get_all(param_type="other")
+        return self._get_all(param_type="other")
 
     def clear_other_parameters(self):
         self["other"] = {}
