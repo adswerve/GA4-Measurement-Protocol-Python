@@ -103,6 +103,8 @@ To create an event, begin by using the following command from your tracking obje
 
 The function will return an Event object with its own functions (see below). Once the Event is complete, you will be able to pass it to your tracking object's `send()` function within a list of 1 or more events.
 
+### Built-In Event Commands
+
 ### Creating an Item
 While building an ecommerce event, create a new item by using the following command from your Event object: `create_new_item(item_id, item_name)`
 * `item_id`: The product SKU for the specific item.
@@ -111,6 +113,9 @@ While building an ecommerce event, create a new item by using the following comm
 At least one of `item_id` or `item_name` must be included; however, it is recommended to use both, if applicable.
 
 The function will return an Item object with its own functions (see below). Once the Item is complete, you will be able to pass it to the associated Event object's `add_item_to_event()` function.
+
+### Built-In Item Commands
+* `set_parameter(name, value)`: Set a new `value` with key `name` as an Item parameter.
 
 ## Example Code
 The following represents a simple example of a custom event sent to GA4:
