@@ -96,6 +96,11 @@ Use one of the following to clear all keys and values stored as a user property,
 ## Events and Ecommerce Items
 While you may construct your own events and ecommerce items as dictionaries, the built-in Event and Item classes should eliminate guesswork about how to properly structure them.
 
+To create an event, begin by using the following command from your tracking object:
+`create_new_event(name)`
+* `name`: Corresponds to the Event Name that you would want to see in your GA4/Firebase reporting. Per Google's requirements, Event Names must be 40 characters or fewer, may only contain alpha-numeric characters and underscores, and must start with an alphabetic character.
+
+## Example Code
 The following represents a simple example of a custom event sent to GA4:
 ``` python
 from ga4mp import gtagMP, firebaseMP
