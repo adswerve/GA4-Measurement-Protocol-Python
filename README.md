@@ -96,9 +96,21 @@ Use one of the following to clear all keys and values stored as a user property,
 ## Events and Ecommerce Items
 While you may construct your own events and ecommerce items as dictionaries, the built-in Event and Item classes should eliminate guesswork about how to properly structure them.
 
+### Creating an Event
 To create an event, begin by using the following command from your tracking object:
 `create_new_event(name)`
 * `name`: Corresponds to the Event Name that you would want to see in your GA4/Firebase reporting. Per Google's requirements, Event Names must be 40 characters or fewer, may only contain alpha-numeric characters and underscores, and must start with an alphabetic character.
+
+The function will return an Event object with its own functions (see below). Once the Event is complete, you will be able to pass it to your tracking object's `send()` function within a list of 1 or more events.
+
+### Creating an Item
+While building an ecommerce event, create a new item by using the following command from your Event object: `create_new_item(item_id, item_name)`
+* `item_id`: The product SKU for the specific item.
+* `item_name`: The name for the specific item.
+
+At least one of `item_id` or `item_name` must be included; however, it is recommended to use both, if applicable.
+
+The function will return an Item object with its own functions (see below). Once the Item is complete, you will be able to pass it to the associated Event object's `add_item_to_event()` function.
 
 ## Example Code
 The following represents a simple example of a custom event sent to GA4:
