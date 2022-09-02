@@ -71,35 +71,35 @@ If you wish to load in your own dictionary, load a JSON file, or opt to use `Fil
 * `data_location`: If using `FileStore`, you must specify where the JSON file exists (or should be created if not yet existing). See `load(data_location)` command below for more details.
 
 ### Built-In Memory Storage Commands (DictStore Specific)
-* `load(data)`: Overwrite the current contents of the dictionary. `data` must be an instance of a dictionary.
-* `save()`: Returns the current contents of the dictionary so that you can save them outside of the tracking object.
+* `store.load(data)`: Overwrite the current contents of the dictionary. `data` must be an instance of a dictionary.
+* `store.save()`: Returns the current contents of the dictionary so that you can save them outside of the tracking object.
 
 ### Built-In Memory Storage Commands (FileStore Specific)
-* `load(data_location)`: Overwrite the current contents of the tracking object's dictionary with the contents of a JSON file at the given `data_location`. If a JSON file does not exist, it will try to create a new JSON file containing an empty object (i.e., `{}`). When using make sure `data_location` includes the path to the file as well as its name and extension (e.g., `./temp/store.json`).
-* `save(data_location)`: Try to overwrite the JSON file at the given `data_location` with the current contents of the tracking object's dictionary. The `data_location` argument is optional: if not supplied, this will try to save to the same location used in the `load(data_location)` command.
+* `store.load(data_location)`: Overwrite the current contents of the tracking object's dictionary with the contents of a JSON file at the given `data_location`. If a JSON file does not exist, it will try to create a new JSON file containing an empty object (i.e., `{}`). When using make sure `data_location` includes the path to the file as well as its name and extension (e.g., `./temp/store.json`).
+* `store.save(data_location)`: Try to overwrite the JSON file at the given `data_location` with the current contents of the tracking object's dictionary. The `data_location` argument is optional: if not supplied, this will try to save to the same location used in the `load(data_location)` command.
 
 ### Built-In Memory Storage Commands (Both Classes)
 > **NOTE**: The memory storage classes operate on 3 different types of data: **user properties**, which are sent to GA/Firebase with all events, **session parameters**, which should temporarily store information relevant to a single session (e.g., a session ID or the last time an event was sent), and **other**, for anything else you might want to save that wouldn't be sent to GA/Firebase.
 
 Use one of the following to set a new `value` with key `name` as a user property, session parameter, or other type of stored data:
-* `set_user_property(name, value)`
-* `set_session_parameter(name, value)`
-* `set_other_parameter(name, value)`
+* `store.set_user_property(name, value)`
+* `store.set_session_parameter(name, value)`
+* `store.set_other_parameter(name, value)`
 
 Use one of the following to get the value of key `name` for a user property, session parameter, or other type of stored data:
-* `get_user_property(name)`
-* `get_session_parameter(name)`
-* `get_other_parameter(name)`
+* `store.get_user_property(name)`
+* `store.get_session_parameter(name)`
+* `store.get_other_parameter(name)`
 
 Use one of the following to get all keys and values stored as a user property, session parameter, or other type of stored data:
-* `get_all_user_properties()`
-* `get_all_session_parameters()`
-* `get_all_other_parameters()`
+* `store.get_all_user_properties()`
+* `store.get_all_session_parameters()`
+* `store.get_all_other_parameters()`
 
 Use one of the following to clear all keys and values stored as a user property, session parameter, or other type of stored data:
-* `clear_user_properties()`
-* `clear_session_parameters()`
-* `clear_other_parameters()`
+* `store.clear_user_properties()`
+* `store.clear_session_parameters()`
+* `store.clear_other_parameters()`
 
 ## Events and Ecommerce Items
 While you may construct your own events and ecommerce items as dictionaries, the built-in Event and Item classes should eliminate guesswork about how to properly structure them.
@@ -133,51 +133,39 @@ The function will return an Item object with its own functions (see below). Once
 * `set_parameter(name, value)`: Set a new `value` with key `name` as an Item parameter.
 
 ## Example Code
-The following represents a simple example of a custom event sent to GA4:
+The following represents an example of building and sending a custom event to GA4:
 ``` python
-from ga4mp import gtagMP, firebaseMP
+from ga4mp import GtagMP
 
-# Create an instance of GA4 object using gtag...
-ga = GtagMP(api_secret = <API_SECRET>, measurement_id = <MEASUREMENT_ID>, client_id=<CLIENT_ID>)
+# Create an instance of GA4 object using gtag.
+gtag_tracker = GtagMP(api_secret=<API_SECRET>, measurement_id=<MEASUREMENT_ID>, client_id=<CLIENT_ID>)
 
-# ...or create an object using Firebase.
-ga = FirebaseMP(api_secret = <API_SECRET>, firebase_app_id=<FIREBASE_APP_ID>, app_instance_id=<CLIENT_ID>)
+# Optionally, overwrite the default store with a dictionary.
+gtag_tracker.create_store(store=<dictionary>)
 
-# Specify event type and parameters
-event_type = 'new_custom_event'
-event_parameters = {'parameter_key_1': 'parameter_1', 'parameter_key_2': 'parameter_2'}
-event = {'name': event_type, 'params': event_parameters }
-events = [event]
+# Create a new event for purchase.
+purchase_event = gtag_tracker.create_new_event(name="purchase")
 
-"""
-Events need to be passed as a list of dictionaries, fitting the format:
-[{'name': 'level_end',
-  'params' : {'level_name': 'First',
-              'success': 'True'}
- },
- {'name': 'level_up',
-  'params': {'character': 'John Madden',
-             'level': 'First'}
- }]
-"""
+# Set transaction_id, value, and currency.
+purchase_event.set_event_param(name="transaction_id", value="T_12345")
+purchase_event.set_event_param(name="currency", value="USD")
+purchase_event.set_event_param(name="value", value=12.21)
 
-# Set persistent user properties
-# Includes user_id, non_personalized_ads, and all else set as custom user_properties
-ga.set_user_property('user_id', 'Thales2000')
-ga.set_user_property('customer_tier','enterprise')
+# Create an item and add details about the item.
+shirt = purchase_event.create_new_item(item_id="SKU_12345", item_name="Stan and Friends Tee")
+shirt.set_parameter("price", 9.99)
+shirt.set_parameter("quantity", 1)
+shirt.set_parameter("item_category", "Apparel")
 
-# Remove a user property
-ga.delete_user_property('user_id')
+# Add the item to the purchase event.
+purchase_event.add_item_to_event(shirt)
 
-# Send a custom event to GA4 immediately
-ga.send(events)
+# Add a user property based on what you know about the user.
+gtag_tracker.store.set_user_property(name="shirt_wearer", value="yes")
 
-# Postponed send of a custom event to GA4
-ga.send(events, postpone=True)
-ga.postponed_send()
-
-# Generate and set a new, random Client ID (gtagMP objects only)
-ga.client_id = ga.random_client_id()
+# Send the event to GA4 immediately.
+event_list = [purchase_event]
+gtag_tracker.send(events=event_list)
 ```
 
 ## Google Developer Documentation
