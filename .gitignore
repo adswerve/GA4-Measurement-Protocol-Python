@@ -44,6 +44,9 @@ node_modules/
 # credential files
 credentials/
 
+# qa files
+qa/
+
 #Spyder
 .spyproject
 
