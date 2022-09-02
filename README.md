@@ -62,15 +62,15 @@ If you wish to load in your own dictionary, load a JSON file, or opt to use `Fil
 * `session_id`: This session parameter is required for certain types of reporting in GA4/Firebase. If you wish to manually set a session_id, use this parameter. Omitting this will default to any session_id included in a loaded `DictStore` or `FileStore`; however, if one is not available, it will then automatically construct a session_id.
 * `data_location`: If using `FileStore`, you must specify where the JSON file exists (or should be created if not yet existing). See `load(data_location)` command below for more details.
 
-### Built-In Commands (DictStore Specific)
+### Built-In Memory Storage Commands (DictStore Specific)
 * `load(data)`: Overwrite the current contents of the dictionary. `data` must be an instance of a dictionary.
 * `save()`: Returns the current contents of the dictionary so that you can save them outside of the tracking object.
 
-### Built-In Commands (FileStore Specific)
+### Built-In Memory Storage Commands (FileStore Specific)
 * `load(data_location)`: Overwrite the current contents of the tracking object's dictionary with the contents of a JSON file at the given `data_location`. If a JSON file does not exist, it will try to create a new JSON file containing an empty object (i.e., `{}`). When using make sure `data_location` includes the path to the file as well as its name and extension (e.g., `./temp/store.json`).
 * `save(data_location)`: Try to overwrite the JSON file at the given `data_location` with the current contents of the tracking object's dictionary. The `data_location` argument is optional: if not supplied, this will try to save to the same location used in the `load(data_location)` command.
 
-### Built-In Commands (Both Classes)
+### Built-In Memory Storage Commands (Both Classes)
 > **NOTE**: The memory storage classes operate on 3 different types of data: **user properties**, which are sent to GA/Firebase with all events, **session parameters**, which should temporarily store information relevant to a single session (e.g., a session ID or the last time an event was sent), and **other**, for anything else you might want to save that wouldn't be sent to GA/Firebase.
 
 Use one of the following to set a new `value` with key `name` as a user property, session parameter, or other type of stored data:
