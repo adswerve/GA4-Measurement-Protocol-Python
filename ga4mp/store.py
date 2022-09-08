@@ -84,7 +84,12 @@ class DictStore(BaseStore):
 
     def load(self, data):
         assert isinstance(data, dict), "loaded data must inherit from dict"
-        self = data
+        # Clear out the currenct dictionary...
+        self.clear()
+        # ...make sure it has the required parameters...
+        self.update([("user_properties", {}),("session_parameters", {})])
+        # ...then add in the supplied data.
+        self.update(data)
 
     def save(self):
         # Give the user back what's in the dictionary so they can decide how to save it.
