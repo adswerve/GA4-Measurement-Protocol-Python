@@ -6,13 +6,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 class BaseStore(dict):
-    def __init__(self):
+    def __init__(self, data: dict = None, data_location: str = None):
         self.update([("user_properties", {}),("session_parameters", {})])
 
-    def load(self):
+    def load(self, data: dict = None, data_location: str = None):
         raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
 
-    def save(self):
+    def save(self, data_location: str = None):
         raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
 
     def _check_exists(self, key):
@@ -105,19 +105,23 @@ class FileStore(BaseStore):
         except:
             logger.info(f"Failed to find file at location: {data_location}")
 
-    def load(self, data_location):
-        # Function to get data from the specified data location, then make sure the FileStore knows where the data is expected.
-        if Path(data_location).exists():
-            with open(data_location, "r") as json_file:
+    def load(self, data_location=None):
+        # Function to get data from the specified data location or the object's initialized location, then make sure the FileStore knows where the data is expected.
+        file_location = data_location or self.data_location
+        
+        # If the provided or stored data_location exists, read the file and overwrite the object's contents.
+        if Path(file_location).exists():
+            with open(file_location, "r") as json_file:
                 self = json.load(json_file)
-            self.data_location = data_location
         # If the data_location doesn't exist, try to create a new empty JSON file at the location given.
         else:
             empty_json = json.loads("{}")
-            Path(data_location).touch()
-            with open(data_location, "w") as json_file:
+            Path(file_location).touch()
+            with open(file_location, "w") as json_file:
                 json.dumps(empty_json, json_file)
-        self.data_location = data_location
+
+        # Make sure the object has the most recent data_location stored.
+        self.data_location = file_location
 
     def save(self, data_location=None):
         # Function to save the current dictionary to a JSON file at the specified location.
