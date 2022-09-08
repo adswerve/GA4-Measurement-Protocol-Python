@@ -99,6 +99,7 @@ class FileStore(BaseStore):
     # Class for working with dictionaries that get saved to a JSON file.
     def __init__(self, data_location):
         super().__init__()
+        self.data_location = data_location
         try:
             self.load(data_location)
         except:
@@ -109,20 +110,20 @@ class FileStore(BaseStore):
         if Path(data_location).exists():
             with open(data_location, "r") as json_file:
                 self = json.load(json_file)
-            self["data_location"] = data_location
+            self.data_location = data_location
         # If the data_location doesn't exist, try to create a new empty JSON file at the location given.
         else:
             empty_json = json.loads("{}")
             Path(data_location).touch()
             with open(data_location, "w") as json_file:
                 json.dumps(empty_json, json_file)
-            self = {"data_location": data_location}
+        self.data_location = data_location
 
     def save(self, data_location=None):
         # Function to save the current dictionary to a JSON file at the specified location.
         try:
-            save_location = data_location or self["data_location"]
-            self["data_location"] = save_location
+            save_location = data_location or self.data_location
+            self.data_location = save_location
             with open(save_location, "w") as outfile:
                 json.dump(self, outfile)
         except:
