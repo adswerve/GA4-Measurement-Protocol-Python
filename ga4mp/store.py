@@ -107,28 +107,24 @@ class FileStore(BaseStore):
 
     def load(self, data_location=None):
         # Function to get data from the specified data location or the object's initialized location, then make sure the FileStore knows where the data is expected.
-        file_location = data_location or self.data_location
+        self.data_location = data_location or self.data_location
         
         # If the provided or stored data_location exists, read the file and overwrite the object's contents.
-        if Path(file_location).exists():
-            with open(file_location, "r") as json_file:
+        if Path(self.data_location).exists():
+            with open(self.data_location, "r") as json_file:
                 self = json.load(json_file)
         # If the data_location doesn't exist, try to create a new empty JSON file at the location given.
         else:
             empty_json = json.loads("{}")
-            Path(file_location).touch()
-            with open(file_location, "w") as json_file:
+            Path(self.data_location).touch()
+            with open(self.data_location, "w") as json_file:
                 json.dumps(empty_json, json_file)
-
-        # Make sure the object has the most recent data_location stored.
-        self.data_location = file_location
 
     def save(self, data_location=None):
         # Function to save the current dictionary to a JSON file at the specified location.
         try:
-            save_location = data_location or self.data_location
-            self.data_location = save_location
-            with open(save_location, "w") as outfile:
+            self.data_location = data_location or self.data_location
+            with open(self.data_location, "w") as outfile:
                 json.dump(self, outfile)
         except:
-            logger.info(f"Failed to save file at location: {save_location}")
+            logger.info(f"Failed to save file at location: {self.data_location}")
