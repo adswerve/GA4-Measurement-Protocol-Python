@@ -77,8 +77,10 @@ class BaseStore(dict):
 
 class DictStore(BaseStore):
     # Class for working with dictionaries that persist for the life of the class.
-    def __init__(self):
+    def __init__(self, data: dict = None):
         super().__init__()
+        if data:
+            self.update(data)
 
     def load(self, data):
         assert isinstance(data, dict), "loaded data must inherit from dict"
