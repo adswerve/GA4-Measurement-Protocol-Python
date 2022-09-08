@@ -7,10 +7,7 @@ logger.setLevel(logging.INFO)
 
 class BaseStore(dict):
     def __init__(self):
-        self = {
-            "user_properties": {},
-            "session_parameters": {}
-        }
+        self.update([("user_properties", {}),("session_parameters", {})])
 
     def load(self):
         raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
