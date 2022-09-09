@@ -15,8 +15,7 @@ import datetime
 import random
 from utils import params_dict
 from event import Event
-from store import DictStore, FileStore
-
+from store import BaseStore, DictStore, FileStore
 
 import os, sys
 sys.path.append(
@@ -63,31 +62,22 @@ class BaseGa4mp(object):
     >>> ga.postponed_send()
     """
 
-    def __init__(self, api_secret):
-        self._initialization_time = time.time()
+    def __init__(self, api_secret, store: BaseStore = None):
+        self._initialization_time = time.time() # used for both session_id and calculating engagement time
         self.api_secret = api_secret
         self._event_list = []
-        # Because it's required, initialize a starter store that the user can overwrite if desired.
-        self.create_store()
+        assert store is None or isinstance(store, BaseStore), "if supplied, store must be an instance of BaseStore"
+        self.store = store or DictStore()
+        self._check_store_requirements()
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
 
-    def create_store(self, use_file=False, store=None, session_id=None, data_location=None):
-        if not use_file:
-            self.store = DictStore()
-            if store is not None:
-                self.store.load(data=store)
-        else:
-            self.store = FileStore(data_location=data_location)
-
-        # session_id is required, so first check if a manual one was supplied...
-        if session_id is not None:
-            self.store.set_session_parameter(name="session_id", value=session_id)
-        # ...then set one for the user if one isn't already present in the store.
+    def _check_store_requirements(self):
+        # Store must contain "session_id" and "last_interaction_time_msec" in order for tracking to work properly.
         if self.store.get_session_parameter("session_id") is None:
             self.store.set_session_parameter(name="session_id", value=int(self._initialization_time))
-        # last_interaction_time_msec factors into the required engagement_time_msec event parameter
-        self.store.set_session_parameter("last_interaction_time_msec", int(self._initialization_time * 1000))
+        # Note: "last_interaction_time_msec" factors into the required "engagement_time_msec" event parameter.
+        self.store.set_session_parameter(name="last_interaction_time_msec", value=int(self._initialization_time * 1000))
 
     def create_new_event(self, name):
         return Event(name=name)
