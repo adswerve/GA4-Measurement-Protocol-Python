@@ -49,7 +49,6 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
 ```
 
 ### Built-In Tracking Object Commands
-* `<TRACKER>.create_store(use_file, store, session_id, data_location)`: See "Memory Storage" section below.
 * `<TRACKER>.create_new_event(name)`: See "Creating an Event" section below.
 * `<TRACKER>.send(events, validation_hit, postpone, date)`: Takes `events` in the form of a list of dictionaries, then sends them as a POST request to GA4 or Firebase. `validation_hit` defaults to `False` and may be safely omitted; setting it to `True` will send the hit to the validation domain. `postpone` defaults to `False` and may also be omitted; if you do not want to send the event immediately, setting `postpone` to `True` will enqueue the POST request. The optional `date` field accepts a Python datetime option for sending historical hits up to 48 hours in the past. **NOTE**: if `date` is specified, `postpone` must be `False` (the default value).
 * `<TRACKER>.postponed_send()`: Sends all enqueued POST requests (i.e., anything added via `send(events, postpone=True)`), then empties the queue.
@@ -61,22 +60,29 @@ In order to solve questions around persistence, this library includes two option
 * `DictStore`, a built-in dictionary class that will persist for the life of the tracking object
 * `FileStore`, a built-in dictionary class that will read from and save to a JSON file in a specified location
 
-Use of one of these two is required for session parameters (e.g., `session_id`) and user properties, so initialization of the tracking object will also initialize a default `DictStore`. 
+Use of one of these two is required for session parameters (e.g., `session_id`) and user properties, so initialization of the tracking object will also initialize a default `DictStore` if a store object is not supplied as an argument.
 
-If you wish to load in your own dictionary, load a JSON file, or opt to use `FileStore` instead, you may do so immediately after initializing the tracking object. For any of these, use the following command from your tracking object:
-`<TRACKER>.create_store(use_file, store, session_id, data_location)`
-* `use_file`: This argument defaults to false, so you may omit it if using `DictStore`.
-* `store`: If using `DictStore`, you may supply your own dictionary, which will automatically be used in the `load(data)` command below. Omit this parameter if using `FileStore` or starting from scratch.
-* `session_id`: This session parameter is required for certain types of reporting in GA4/Firebase. If you wish to manually set a session_id, use this parameter. Omitting this will default to any session_id included in a loaded `DictStore` or `FileStore`; however, if one is not available, it will then automatically construct a session_id.
-* `data_location`: If using `FileStore`, you must specify where the JSON file exists (or should be created if not yet existing). See `load(data_location)` command below for more details.
+In order to create your own store object, import either `DictStore` or `FileStore` from `ga4mp.store`, and then use the new store object when initializing your tracker.
+
+### Initializing the Tracker with a Store (Example)
+```py
+from ga4mp import GtagMP
+from ga4mp.store import DictStore, FileStore
+
+# DictStoreexpects a dict object
+new_dict_store = DictStore(data=your_dictionary)
+# FileStore expects a string pointing to a specific existing JSON file - or desired location and name of a new JSON file to be created automatically.
+new_file_store = FileStore(data_location=".folder/file.json")
+
+# Include whichever type of store you choose as an initialization argument for your tracker.
+tracker = GtagMP(api_secret="934TXS", measurement_id="G-12345", client_id="1234852.1235081235", store=new_file_store)
+```
 
 ### Built-In Memory Storage Commands (DictStore Specific)
-* `<TRACKER>.store.load(data)`: Overwrite the current contents of the dictionary. `data` must be an instance of a dictionary.
 * `<TRACKER>.store.save()`: Returns the current contents of the dictionary so that you can save them outside of the tracking object.
 
 ### Built-In Memory Storage Commands (FileStore Specific)
-* `<TRACKER>.store.load(data_location)`: Overwrite the current contents of the tracking object's dictionary with the contents of a JSON file at the given `data_location`. If a JSON file does not exist, it will try to create a new JSON file containing an empty object (i.e., `{}`). When using make sure `data_location` includes the path to the file as well as its name and extension (e.g., `./temp/store.json`).
-* `<TRACKER>.store.save(data_location)`: Try to overwrite the JSON file at the given `data_location` with the current contents of the tracking object's dictionary. The `data_location` argument is optional: if not supplied, this will try to save to the same location used in the `load(data_location)` command.
+* `<TRACKER>.store.save()`: Try to overwrite the JSON file at the `data_location` given at time of store initialization with the current contents of the tracking object's dictionary.
 
 ### Built-In Memory Storage Commands (Both Classes)
 > **NOTE**: The memory storage classes operate on 3 different types of data: **user properties**, which are sent to GA/Firebase with all events, **session parameters**, which should temporarily store information relevant to a single session (e.g., a session ID or the last time an event was sent), and **other**, for anything else you might want to save that wouldn't be sent to GA/Firebase.
@@ -136,12 +142,13 @@ The function will return an Item object with its own functions (see below). Once
 The following represents an example of building and sending a custom event to GA4:
 ``` python
 from ga4mp import GtagMP
+from ga4mp.store import DictStore
 
-# Create an instance of GA4 object using gtag.
-gtag_tracker = GtagMP(api_secret=<API_SECRET>, measurement_id=<MEASUREMENT_ID>, client_id=<CLIENT_ID>)
+# Create a DictStore
+my_store = DictStore(data=<DICTIONARY>)
 
-# Optionally, overwrite the default store with a dictionary.
-gtag_tracker.create_store(store=<dictionary>)
+# Create an instance of GA4 object using gtag, including the new DictStore.
+gtag_tracker = GtagMP(api_secret=<API_SECRET>, measurement_id=<MEASUREMENT_ID>, client_id=<CLIENT_ID>, store=my_store)
 
 # Create a new event for purchase.
 purchase_event = gtag_tracker.create_new_event(name="purchase")
