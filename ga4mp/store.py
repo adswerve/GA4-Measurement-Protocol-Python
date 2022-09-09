@@ -6,13 +6,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 class BaseStore(dict):
-    def __init__(self, data: dict = None, data_location: str = None):
+    def __init__(self):
         self.update([("user_properties", {}),("session_parameters", {})])
 
-    def load(self, data: dict = None, data_location: str = None):
-        raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
-
-    def save(self, data_location: str = None):
+    def save(self):
         raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
 
     def _check_exists(self, key):
@@ -82,22 +79,13 @@ class DictStore(BaseStore):
         if data:
             self.update(data)
 
-    def load(self, data):
-        assert isinstance(data, dict), "loaded data must inherit from dict"
-        # Clear out the currenct dictionary...
-        self.clear()
-        # ...make sure it has the required parameters...
-        self.update([("user_properties", {}),("session_parameters", {})])
-        # ...then add in the supplied data.
-        self.update(data)
-
     def save(self):
         # Give the user back what's in the dictionary so they can decide how to save it.
         self._get_all()
 
 class FileStore(BaseStore):
     # Class for working with dictionaries that get saved to a JSON file.
-    def __init__(self, data_location):
+    def __init__(self, data_location: str = None):
         super().__init__()
         self.data_location = data_location
         try:
@@ -105,10 +93,8 @@ class FileStore(BaseStore):
         except:
             logger.info(f"Failed to find file at location: {data_location}")
 
-    def load(self, data_location=None):
-        # Function to get data from the specified data location or the object's initialized location, then make sure the FileStore knows where the data is expected.
-        self.data_location = data_location or self.data_location
-        
+    def load(self):
+        # Function to get data from the object's initialized location.
         # If the provided or stored data_location exists, read the file and overwrite the object's contents.
         if Path(self.data_location).exists():
             with open(self.data_location, "r") as json_file:
