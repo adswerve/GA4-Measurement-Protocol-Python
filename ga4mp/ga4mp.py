@@ -15,7 +15,7 @@ import datetime
 import random
 from utils import params_dict
 from event import Event
-from store import BaseStore, DictStore, FileStore
+from store import BaseStore, DictStore
 
 import os, sys
 sys.path.append(
