@@ -107,10 +107,9 @@ class FileStore(BaseStore):
             with open(self.data_location, "w") as json_file:
                 json.dumps(starter_json, json_file)
 
-    def save(self, data_location=None):
-        # Function to save the current dictionary to a JSON file at the specified location.
+    def save(self):
+        # Function to save the current dictionary to a JSON file at the object's initialized location.
         try:
-            self.data_location = data_location or self.data_location
             with open(self.data_location, "w") as outfile:
                 json.dump(self, outfile)
         except:
