@@ -89,22 +89,23 @@ class FileStore(BaseStore):
         super().__init__()
         self.data_location = data_location
         try:
-            self.load(data_location)
+            self._load_file(data_location)
         except:
             logger.info(f"Failed to find file at location: {data_location}")
 
-    def load(self):
+    def _load_file(self):
         # Function to get data from the object's initialized location.
         # If the provided or stored data_location exists, read the file and overwrite the object's contents.
         if Path(self.data_location).exists():
             with open(self.data_location, "r") as json_file:
                 self = json.load(json_file)
-        # If the data_location doesn't exist, try to create a new empty JSON file at the location given.
+        # If the data_location doesn't exist, try to create a new starter JSON file at the location given.
         else:
-            empty_json = json.loads("{}")
+            starter_dict = '{"user_properties":{}, "session_parameters":{}}'
+            starter_json = json.loads(starter_dict)
             Path(self.data_location).touch()
             with open(self.data_location, "w") as json_file:
-                json.dumps(empty_json, json_file)
+                json.dumps(starter_json, json_file)
 
     def save(self, data_location=None):
         # Function to save the current dictionary to a JSON file at the specified location.
