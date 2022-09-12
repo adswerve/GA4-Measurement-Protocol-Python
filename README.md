@@ -47,59 +47,142 @@ Create your *credentials.json* file and put in your "./credentials" subdirectory
  "FIREBASE_APP_ID": "<YOUR_FIREBASE_APP_ID>",
  "APP_INSTANCE_ID": "<YOUR_APP_INSTANCE_ID>"}
 ```
-The following represents a simple example of a custom event sent to GA4:
-``` python
-from ga4mp import gtagMP, firebaseMP
 
-# Create an instance of GA4 object using gtag...
-ga = GtagMP(api_secret = <API_SECRET>, measurement_id = <MEASUREMENT_ID>, client_id=<CLIENT_ID>)
+### Built-In Tracking Object Commands
+* `<TRACKER>.create_new_event(name)`: See "Creating an Event" section below.
+* `<TRACKER>.send(events, validation_hit, postpone, date)`: Takes `events` in the form of a list of dictionaries, then sends them as a POST request to GA4 or Firebase. `validation_hit` defaults to `False` and may be safely omitted; setting it to `True` will send the hit to the validation domain. `postpone` defaults to `False` and may also be omitted; if you do not want to send the event immediately, setting `postpone` to `True` will enqueue the POST request. The optional `date` field accepts a Python datetime option for sending historical hits up to 48 hours in the past. **NOTE**: if `date` is specified, `postpone` must be `False` (the default value).
+* `<TRACKER>.postponed_send()`: Sends all enqueued POST requests (i.e., anything added via `send(events, postpone=True)`), then empties the queue.
+* `<TRACKER>.append_event_to_params_dict(new_name_and_parameters)`: If necessary, add a new event and its expected parameters to the built-in `utils.py` dictionary. `new_name_and_parameters` takes a dictionary of with single key-value pair. Its key should be the new event name, and its value should be a list of parameters names (e.g., `{'new_name': ['new_param_1', 'new_param_2', 'new_param_3']}`). **NOTE**: the `utils.py` dictionary is used for error checking on automatically collected and recommended event types, and appending your own custom events is necessary only if you want them to be checked against the dictionary when using the `send()` command.
+* `<GTAG_TRACKER>.random_client_id()`: If using the `GtagMP` tracking object, this utility function will generate and return a new client ID matching the typical format of 10 random digits and the UNIX timestamp in seconds, joined by a period. This function will not overwrite the client ID on its own, but you may do so yourself using `example_tracker.client_id = example_tracker.random_client_id()`.
 
-# ...or create an object using Firebase.
-ga = FirebaseMP(api_secret = <API_SECRET>, firebase_app_id=<FIREBASE_APP_ID>, app_instance_id=<CLIENT_ID>)
+## Memory Storage
+In order to solve questions around persistence, this library includes two options for storage:
+* `DictStore`, a built-in dictionary class that will persist for the life of the tracking object
+* `FileStore`, a built-in dictionary class that will read from and save to a JSON file in a specified location
 
-# Specify event type and parameters
-event_type = 'new_custom_event'
-event_parameters = {'parameter_key_1': 'parameter_1', 'parameter_key_2': 'parameter_2'}
-event = {'name': event_type, 'params': event_parameters }
-events = [event]
+Use of one of these two is required for session parameters (e.g., `session_id`) and user properties, so initialization of the tracking object will also initialize a default `DictStore` if a store object is not supplied as an argument.
 
-"""
-Events need to be passed as a list of dictionaries, fitting the format:
-[{'name': 'level_end',
-  'params' : {'level_name': 'First',
-              'success': 'True'}
- },
- {'name': 'level_up',
-  'params': {'character': 'John Madden',
-             'level': 'First'}
- }]
-"""
+In order to create your own store object, import either `DictStore` or `FileStore` from `ga4mp.store`, and then use the new store object when initializing your tracker.
 
-# Set persistent user properties
-# Includes user_id, non_personalized_ads, and all else set as custom user_properties
-ga.set_user_property('user_id', 'Thales2000')
-ga.set_user_property('customer_tier','enterprise')
+### Initializing the Tracker with a Store (Example)
+```py
+from ga4mp import GtagMP
+from ga4mp.store import DictStore, FileStore
 
-# Remove a user property
-ga.delete_user_property('user_id')
+# DictStoreexpects a dict object
+new_dict_store = DictStore(data=your_dictionary)
+# FileStore expects a string pointing to a specific existing JSON file - or desired location and name of a new JSON file to be created automatically.
+new_file_store = FileStore(data_location=".folder/file.json")
 
-# Send a custom event to GA4 immediately
-ga.send(events)
-
-# Postponed send of a custom event to GA4
-ga.send(events, postpone=True)
-ga.postponed_send()
-
-# Generate and set a new, random Client ID (gtagMP objects only)
-ga.client_id = ga.random_client_id()
+# Include whichever type of store you choose as an initialization argument for your tracker.
+tracker = GtagMP(api_secret="934TXS", measurement_id="G-12345", client_id="1234852.1235081235", store=new_file_store)
 ```
 
-## How to construct Events
+### Built-In Memory Storage Commands (DictStore Specific)
+* `<TRACKER>.store.save()`: Returns the current contents of the dictionary so that you can save them outside of the tracking object.
+
+### Built-In Memory Storage Commands (FileStore Specific)
+* `<TRACKER>.store.save()`: Try to overwrite the JSON file at the `data_location` given at time of store initialization with the current contents of the tracking object's dictionary.
+
+### Built-In Memory Storage Commands (Both Classes)
+> **NOTE**: The memory storage classes operate on 3 different types of data: **user properties**, which are sent to GA/Firebase with all events, **session parameters**, which should temporarily store information relevant to a single session (e.g., a session ID or the last time an event was sent), and **other**, for anything else you might want to save that wouldn't be sent to GA/Firebase.
+
+Use one of the following to set a new `value` with key `name` as a user property, session parameter, or other type of stored data:
+* `<TRACKER>.store.set_user_property(name, value)`
+* `<TRACKER>.store.set_session_parameter(name, value)`
+* `<TRACKER>.store.set_other_parameter(name, value)`
+
+Use one of the following to get the value of key `name` for a user property, session parameter, or other type of stored data:
+* `<TRACKER>.store.get_user_property(name)`
+* `<TRACKER>.store.get_session_parameter(name)`
+* `<TRACKER>.store.get_other_parameter(name)`
+
+Use one of the following to get all keys and values stored as a user property, session parameter, or other type of stored data:
+* `<TRACKER>.store.get_all_user_properties()`
+* `<TRACKER>.store.get_all_session_parameters()`
+* `<TRACKER>.store.get_all_other_parameters()`
+
+Use one of the following to clear all keys and values stored as a user property, session parameter, or other type of stored data:
+* `<TRACKER>.store.clear_user_properties()`
+* `<TRACKER>.store.clear_session_parameters()`
+* `<TRACKER>.store.clear_other_parameters()`
+
+## Events and Ecommerce Items
+While you may construct your own events and ecommerce items as dictionaries, the built-in Event and Item classes should eliminate guesswork about how to properly structure them.
+
+### Creating an Event
+To create an event, begin by using the following command from your tracking object:
+`<TRACKER>.create_new_event(name)`
+* `name`: Corresponds to the Event Name that you would want to see in your GA4/Firebase reporting. Per Google's requirements, Event Names must be 40 characters or fewer, may only contain alpha-numeric characters and underscores, and must start with an alphabetic character.
+
+The function will return an Event object with its own functions (see below). Once the Event is complete, you will be able to pass it to your tracking object's `send()` function within a list of 1 or more events.
+
+### Built-In Event Commands
+* `<EVENT>.set_event_name(name)`: Overwrite the current Event Name of the Event object with `name`.
+* `<EVENT>.get_event_name()`: Return the current Event Name of the Event object.
+* `<EVENT>.set_event_param(name, value)`: Set a new `value` with key `name` as an Event parameter. If the key already exists, its value will be overwritten; otherwise, a new key-value pair will be added.
+* `<EVENT>.get_event_params()`: Return a dictionary of all parameters associated with the Event.
+* `<EVENT>.delete_event_param(name)`: Delete a single key-value pair with a key of `name` from the Event's parameters.
+* `<EVENT>.create_new_item(item_id, item_name)`: See "Creating an Item" section below.
+* `<EVENT>.add_item_to_event(item)`: Add a single Item to the Event's `items` list parameter. Note that `item` is expected to be a single Item object or dictionary - not a list.
+
+### Creating an Item
+While building an ecommerce event, create a new item by using the following command from your Event object: `<EVENT>.create_new_item(item_id, item_name)`
+* `item_id`: The product SKU for the specific item.
+* `item_name`: The name for the specific item.
+
+At least one of `item_id` or `item_name` must be included; however, it is recommended to use both, if applicable.
+
+The function will return an Item object with its own functions (see below). Once the Item is complete, you will be able to pass it to the associated Event object's `add_item_to_event()` function.
+
+### Built-In Item Commands
+* `<ITEM>.set_parameter(name, value)`: Set a new `value` with key `name` as an Item parameter.
+
+## Example Code
+The following represents an example of building and sending a custom event to GA4:
+``` python
+from ga4mp import GtagMP
+from ga4mp.store import DictStore
+
+# Create a DictStore
+my_store = DictStore(data=<DICTIONARY>)
+
+# Create an instance of GA4 object using gtag, including the new DictStore.
+gtag_tracker = GtagMP(api_secret=<API_SECRET>, measurement_id=<MEASUREMENT_ID>, client_id=<CLIENT_ID>, store=my_store)
+
+# Create a new event for purchase.
+purchase_event = gtag_tracker.create_new_event(name="purchase")
+
+# Set transaction_id, value, and currency.
+purchase_event.set_event_param(name="transaction_id", value="T_12345")
+purchase_event.set_event_param(name="currency", value="USD")
+purchase_event.set_event_param(name="value", value=12.21)
+
+# Create an item and add details about the item.
+shirt = purchase_event.create_new_item(item_id="SKU_12345", item_name="Stan and Friends Tee")
+shirt.set_parameter("price", 9.99)
+shirt.set_parameter("quantity", 1)
+shirt.set_parameter("item_category", "Apparel")
+
+# Add the item to the purchase event.
+purchase_event.add_item_to_event(shirt)
+
+# Add a user property based on what you know about the user.
+gtag_tracker.store.set_user_property(name="shirt_wearer", value="yes")
+
+# Send the event to GA4 immediately.
+event_list = [purchase_event]
+gtag_tracker.send(events=event_list)
+```
+
+## Google Developer Documentation
+Some relevant documentation from Google may be found below...
+
+### How to construct Events
 For more information on constructing events, please review the [GA4 Measurement Protocol reference](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference).
 
-## User properties
+### User properties
 For more information on what user properties are in GA4 and what you can do with them, [please review here](https://developers.google.com/analytics/devguides/collection/protocol/ga4/user-properties?client_type=gtag)
 
 ## License
-
 GA4 Measurement Protocol Support for Python is licensed under the [BSD License](./LICENSE).

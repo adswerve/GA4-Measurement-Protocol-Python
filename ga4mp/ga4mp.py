@@ -13,11 +13,17 @@ import urllib.request
 import time
 import datetime
 import random
-from ga4mp.utils import params_dict
+from utils import params_dict
+from event import Event
+from store import BaseStore, DictStore
+
+import os, sys
+sys.path.append(
+    os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
 
 class BaseGa4mp(object):
     """
@@ -56,12 +62,25 @@ class BaseGa4mp(object):
     >>> ga.postponed_send()
     """
 
-    def __init__(self, api_secret):
+    def __init__(self, api_secret, store: BaseStore = None):
+        self._initialization_time = time.time() # used for both session_id and calculating engagement time
         self.api_secret = api_secret
         self._event_list = []
-        self._user_properties = {}
+        assert store is None or isinstance(store, BaseStore), "if supplied, store must be an instance of BaseStore"
+        self.store = store or DictStore()
+        self._check_store_requirements()
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
+
+    def _check_store_requirements(self):
+        # Store must contain "session_id" and "last_interaction_time_msec" in order for tracking to work properly.
+        if self.store.get_session_parameter("session_id") is None:
+            self.store.set_session_parameter(name="session_id", value=int(self._initialization_time))
+        # Note: "last_interaction_time_msec" factors into the required "engagement_time_msec" event parameter.
+        self.store.set_session_parameter(name="last_interaction_time_msec", value=int(self._initialization_time * 1000))
+
+    def create_new_event(self, name):
+        return Event(name=name)
 
     def send(self, events, validation_hit=False, postpone=False, date=None):
         """
@@ -93,6 +112,7 @@ class BaseGa4mp(object):
         # check for any missing or invalid parameters among automatically collected and recommended event types
         self._check_params(events)
         self._check_date_not_in_future(date)
+        self._add_session_id_and_engagement_time(events)
 
         if postpone is True:
             # build event list to send later
@@ -136,9 +156,7 @@ class BaseGa4mp(object):
 
         params_dict.update(new_name_and_parameters)
 
-    def _http_post(
-        self, batched_event_list, validation_hit=False, postpone=False, date=None
-    ):
+    def _http_post(self, batched_event_list, validation_hit=False, postpone=False, date=None):
         """
         Method to send http POST request to google-analytics.
 
@@ -235,7 +253,7 @@ class BaseGa4mp(object):
 
         for event in events:
 
-            assert type(event) == dict, "each event should be a dictionary"
+            assert isinstance(event, dict), "each event should be an instance of a dictionary"
 
             assert "name" in event, 'each event should have a "name" key'
 
@@ -250,35 +268,23 @@ class BaseGa4mp(object):
                 for parameter in params_dict[event_name]:
                     if parameter not in event_params.keys():
                         logger.warning(
-                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
+                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nThe parameter '{parameter}' triggered this warning.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
                         )
 
-    def set_user_property(self, property, value):
-
+    def _add_session_id_and_engagement_time(self, events):
         """
-        Method to set user_id, user_properties, non_personalized_ads
-
-        Parameters
-        ----------
-        property : string
-        value: dependent on property (user_id, user_properties - string, non_personalized_ads - bool)
+        Method to add the session_id and engagement_time_msec parameter to all events.
         """
-        self._user_properties.update({property: value})
+        for event in events:
+            current_time_in_milliseconds = int(time.time() * 1000)
 
-    def delete_user_property(self, property):
-
-        """
-        Method to remove user_id, user_properties, non_personalized_ads
-
-        Parameters
-        ----------
-        property : string
-        """
-        try:
-            if property in self._user_properties.keys():
-                self._user_properties.pop(property)
-        except:
-            logger.info(f"Failed to delete user property: {property}")
+            event_params = event["params"]
+            if "session_id" not in event_params.keys():
+                event_params["session_id"] = self.store.get_session_parameter("session_id")
+            if "engagement_time_msec" not in event_params.keys():
+                last_interaction_time = self.store.get_session_parameter("last_interaction_time_msec")
+                event_params["engagement_time_msec"] = current_time_in_milliseconds - last_interaction_time if current_time_in_milliseconds > last_interaction_time else 0
+                self.store.set_session_parameter(name="last_interaction_time_msec", value=current_time_in_milliseconds)
 
     def _add_user_props_to_hit(self, hit):
 
@@ -289,15 +295,16 @@ class BaseGa4mp(object):
         ----------
         hit : dict
         """
-        for key in self._user_properties:
+
+        for key in self.store.get_all_user_properties():
             try:
                 if key in ["user_id", "non_personalized_ads"]:
-                    hit.update({key: self._user_properties[key]})
+                    hit.update({key: self.store.get_user_property(key)})
                 else:
                     if "user_properties" not in hit.keys():
                         hit.update({"user_properties": {}})
                     hit["user_properties"].update(
-                        {key: {"value": self._user_properties[key]}}
+                        {key: {"value": self.store.get_user_property(key)}}
                     )
             except:
                 logger.info(f"Failed to add user property to outgoing hit: {key}")
@@ -362,7 +369,7 @@ class GtagMP(BaseGa4mp):
         A unique identifier for a client, representing a specific browser/device.
     """
 
-    def __init__(self, api_secret, measurement_id, client_id):
+    def __init__(self, api_secret, measurement_id, client_id,):
         super().__init__(api_secret)
         self.measurement_id = measurement_id
         self.client_id = client_id
