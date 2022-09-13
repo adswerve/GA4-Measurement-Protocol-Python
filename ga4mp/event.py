@@ -16,7 +16,9 @@ class Event(dict):
         # Series of checks to comply with GA4 event collection limits: https://support.google.com/analytics/answer/9267744
         if len(name) > 40:
             raise ValueError("Event parameter name cannot exceed 40 characters.")
-        if len(str(value)) > 100:
+        if name in ["page_location", "page_referrer", "page_title"] and len(str(value)) > 300:
+            raise ValueError("Event parameter value for page info cannot exceed 300 characters.")
+        if name not in ["page_location", "page_referrer", "page_title"] and len(str(value)) > 100:
             raise ValueError("Event parameter value cannot exceed 100 characters.")
         if "params" not in self.keys():
             self["params"] = {}
