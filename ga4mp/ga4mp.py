@@ -1,9 +1,9 @@
 ###############################################################################
 # Google Analytics 4 Measurement Protocol for Python
-# Copyright (c) 2020, Analytics Pros
+# Copyright (c) 2022, Adswerve
 #
 # This project is free software, distributed under the BSD license.
-# Analytics Pros offers consulting and integration services if your firm needs
+# Adswerve offers consulting and integration services if your firm needs
 # assistance in strategy, implementation, or auditing existing work.
 ###############################################################################
 
@@ -12,26 +12,28 @@ import logging
 import urllib.request
 import time
 import datetime
-from ga4mp.utils import params_dict
+import random
+from utils import params_dict
+from event import Event
+from store import BaseStore, DictStore
 
-logging.basicConfig(level=logging.INFO)
+import os, sys
+sys.path.append(
+    os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+)
+
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-
-class Ga4mp(object):
+class BaseGa4mp(object):
     """
-    Class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.
+    Parent class that provides an interface for sending data to Google Analytics, supporting the GA4 Measurement Protocol.
 
     Parameters
     ----------
-    measurement_id : string
-        The identifier for a Data Stream. Found in the Google Analytics UI under: Admin > Data Streams > choose your stream > Measurement ID
     api_secret : string
-        Generated throught the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: Admin > Data Streams >
-        choose your stream > Measurement Protocol > Create
-    client_id : string
-        Getting your Google API client ID: https://developers.google.com/identity/one-tap/web/guides/get-google-api-clientid
-
+        Generated through the Google Analytics UI. To create a new secret, navigate in the Google Analytics UI to: Admin > Data Streams >
+        [choose your stream] > Measurement Protocol API Secrets > Create
 
     See Also
     --------
@@ -40,10 +42,15 @@ class Ga4mp(object):
 
     Examples
     --------
+    # Initialize tracking object for gtag usage
+    >>> ga = gtagMP(api_secret = "API_SECRET", measurement_id = "MEASUREMENT_ID", client_id="CLIENT_ID")
 
-    >>> ga = Ga4mp(measurement_id = "MEASUREMENT_ID", api_secret = "API_SECRET", client_id="CLIENT_ID")
+    # Initialize tracking object for Firebase usage
+    >>> ga = firebaseMP(api_secret = "API_SECRET", firebase_app_id = "FIREBASE_APP_ID", app_instance_id="APP_INSTANCE_ID")
+
+    # Build an event
     >>> event_type = 'new_custom_event'
-    >>> event_parameters = {'paramater_key_1': 'parameter_1', 'paramater_key_2': 'parameter_2'}
+    >>> event_parameters = {'parameter_key_1': 'parameter_1', 'parameter_key_2': 'parameter_2'}
     >>> event = {'name': event_type, 'params': event_parameters }
     >>> events = [event]
 
@@ -55,14 +62,25 @@ class Ga4mp(object):
     >>> ga.postponed_send()
     """
 
-    def __init__(self, measurement_id, api_secret, client_id):
-        self.measurement_id = measurement_id
+    def __init__(self, api_secret, store: BaseStore = None):
+        self._initialization_time = time.time() # used for both session_id and calculating engagement time
         self.api_secret = api_secret
-        self.client_id = client_id
         self._event_list = []
-        self._user_properties = {}
+        assert store is None or isinstance(store, BaseStore), "if supplied, store must be an instance of BaseStore"
+        self.store = store or DictStore()
+        self._check_store_requirements()
         self._base_domain = "https://www.google-analytics.com/mp/collect"
         self._validation_domain = "https://www.google-analytics.com/debug/mp/collect"
+
+    def _check_store_requirements(self):
+        # Store must contain "session_id" and "last_interaction_time_msec" in order for tracking to work properly.
+        if self.store.get_session_parameter("session_id") is None:
+            self.store.set_session_parameter(name="session_id", value=int(self._initialization_time))
+        # Note: "last_interaction_time_msec" factors into the required "engagement_time_msec" event parameter.
+        self.store.set_session_parameter(name="last_interaction_time_msec", value=int(self._initialization_time * 1000))
+
+    def create_new_event(self, name):
+        return Event(name=name)
 
     def send(self, events, validation_hit=False, postpone=False, date=None):
         """
@@ -71,7 +89,7 @@ class Ga4mp(object):
         Parameters
         ----------
         events : List[Dict]
-            A list of dictionaries  of the events to be sent to Google Analytics. The list of dictionaries should adhere
+            A list of dictionaries of the events to be sent to Google Analytics. The list of dictionaries should adhere
             to the following format:
 
             [{'name': 'level_end',
@@ -94,6 +112,7 @@ class Ga4mp(object):
         # check for any missing or invalid parameters among automatically collected and recommended event types
         self._check_params(events)
         self._check_date_not_in_future(date)
+        self._add_session_id_and_engagement_time(events)
 
         if postpone is True:
             # build event list to send later
@@ -124,7 +143,7 @@ class Ga4mp(object):
     def append_event_to_params_dict(self, new_name_and_parameters):
 
         """
-        Method to append event name and parameters key-value pair to parameters dictionary.
+        Method to append event name and parameters key-value pairing(s) to parameters dictionary.
 
         Parameters
         ----------
@@ -137,9 +156,7 @@ class Ga4mp(object):
 
         params_dict.update(new_name_and_parameters)
 
-    def _http_post(
-        self, batched_event_list, validation_hit=False, postpone=False, date=None
-    ):
+    def _http_post(self, batched_event_list, validation_hit=False, postpone=False, date=None):
         """
         Method to send http POST request to google-analytics.
 
@@ -168,8 +185,9 @@ class Ga4mp(object):
         # loop through events in batches of 25
         batch_number = 1
         for batch in batched_event_list:
-            url = f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
-            request = {"client_id": self.client_id, "events": batch}
+            # url and request slightly differ by subclass
+            url = self._build_url(domain=domain)
+            request = self._build_request(batch=batch)
             self._add_user_props_to_hit(request)
 
             # make adjustments for postponed hit
@@ -211,12 +229,12 @@ class Ga4mp(object):
     def _check_params(self, events):
 
         """
-        Method to check whether the event payload parameters provided meets supported parameters.
+        Method to check whether the provided event payload parameters align with supported parameters.
 
         Parameters
         ----------
         events : List[Dict]
-            A list of dictionaries  of the events to be sent to Google Analytics. The list of dictionaries should adhere
+            A list of dictionaries of the events to be sent to Google Analytics. The list of dictionaries should adhere
             to the following format:
 
             [{'name': 'level_end',
@@ -235,7 +253,7 @@ class Ga4mp(object):
 
         for event in events:
 
-            assert type(event) == dict, "each event should be a dictionary"
+            assert isinstance(event, dict), "each event should be an instance of a dictionary"
 
             assert "name" in event, 'each event should have a "name" key'
 
@@ -250,35 +268,23 @@ class Ga4mp(object):
                 for parameter in params_dict[event_name]:
                     if parameter not in event_params.keys():
                         logger.warning(
-                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
+                            f"WARNING: Event parameters do not match event type.\nFor {event_name} event type, the correct parameter(s) are {params_dict[event_name]}.\nThe parameter '{parameter}' triggered this warning.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n"
                         )
 
-    def set_user_property(self, property, value):
-
+    def _add_session_id_and_engagement_time(self, events):
         """
-        Method to set user_id, user_properties, non_personalized_ads
-
-        Parameters
-        ----------
-        property : string
-        value: dependent on property (user_id, user_properties - string, non_personalized_ads - bool)
+        Method to add the session_id and engagement_time_msec parameter to all events.
         """
-        self._user_properties.update({property: value})
+        for event in events:
+            current_time_in_milliseconds = int(time.time() * 1000)
 
-    def delete_user_property(self, property):
-
-        """
-        Method to remove user_id, user_properties, non_personalized_ads
-
-        Parameters
-        ----------
-        property : string
-        """
-        try:
-            if property in self._user_properties.keys():
-                self._user_properties.pop(property)
-        except:
-            logger.info(f"Failed to delete user property: {property}")
+            event_params = event["params"]
+            if "session_id" not in event_params.keys():
+                event_params["session_id"] = self.store.get_session_parameter("session_id")
+            if "engagement_time_msec" not in event_params.keys():
+                last_interaction_time = self.store.get_session_parameter("last_interaction_time_msec")
+                event_params["engagement_time_msec"] = current_time_in_milliseconds - last_interaction_time if current_time_in_milliseconds > last_interaction_time else 0
+                self.store.set_session_parameter(name="last_interaction_time_msec", value=current_time_in_milliseconds)
 
     def _add_user_props_to_hit(self, hit):
 
@@ -289,15 +295,16 @@ class Ga4mp(object):
         ----------
         hit : dict
         """
-        for key in self._user_properties:
+
+        for key in self.store.get_all_user_properties():
             try:
                 if key in ["user_id", "non_personalized_ads"]:
-                    hit.update({key: self._user_properties[key]})
+                    hit.update({key: self.store.get_user_property(key)})
                 else:
                     if "user_properties" not in hit.keys():
                         hit.update({"user_properties": {}})
                     hit["user_properties"].update(
-                        {key: {"value": self._user_properties[key]}}
+                        {key: {"value": self.store.get_user_property(key)}}
                     )
             except:
                 logger.info(f"Failed to add user property to outgoing hit: {key}")
@@ -343,3 +350,67 @@ class Ga4mp(object):
             assert (
                 date <= datetime.datetime.now()
             ), "Provided date cannot be in the future"
+
+    def _build_url(self, domain):
+        raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
+
+    def _build_request(self, batch):
+        raise NotImplementedError("Subclass should be using this function, but it was called through the base class instead.")
+
+class GtagMP(BaseGa4mp):
+    """
+    Subclass for users of gtag. See `Ga4mp` parent class for examples.
+
+    Parameters
+    ----------
+    measurement_id : string
+        The identifier for a Data Stream. Found in the Google Analytics UI under: Admin > Data Streams > [choose your stream] > Measurement ID (top-right)
+    client_id : string
+        A unique identifier for a client, representing a specific browser/device.
+    """
+
+    def __init__(self, api_secret, measurement_id, client_id,):
+        super().__init__(api_secret)
+        self.measurement_id = measurement_id
+        self.client_id = client_id
+
+    def _build_url(self, domain):
+        return f"{domain}?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
+
+    def _build_request(self, batch):
+        return {"client_id": self.client_id, "events": batch}
+
+    def random_client_id(self):
+        """
+        Utility function for generating a new client ID matching the typical format of 10 random digits and the UNIX timestamp in seconds, joined by a period.
+        """
+        return "%0.10d" % random.randint(0,9999999999) + "." + str(int(time.time()))
+
+class FirebaseMP(BaseGa4mp):
+    """
+    Subclass for users of Firebase. See `Ga4mp` parent class for examples.
+
+    Parameters
+    ----------
+    firebase_app_id : string
+        The identifier for a Firebase app. Found in the Firebase console under: Project Settings > General > Your Apps > App ID.
+    app_instance_id : string
+        A unique identifier for a Firebase app instance.
+            * Android - getAppInstanceId() - https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics#public-taskstring-getappinstanceid
+            * Kotlin - getAppInstanceId() - https://firebase.google.com/docs/reference/kotlin/com/google/firebase/analytics/FirebaseAnalytics#getappinstanceid
+            * Swift - appInstanceID() - https://firebase.google.com/docs/reference/swift/firebaseanalytics/api/reference/Classes/Analytics#appinstanceid
+            * Objective-C - appInstanceID - https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#+appinstanceid
+            * C++ - GetAnalyticsInstanceId() - https://firebase.google.com/docs/reference/cpp/namespace/firebase/analytics#getanalyticsinstanceid
+            * Unity - GetAnalyticsInstanceIdAsync() - https://firebase.google.com/docs/reference/unity/class/firebase/analytics/firebase-analytics#getanalyticsinstanceidasync
+    """
+
+    def __init__(self, api_secret, firebase_app_id, app_instance_id):
+        super().__init__(api_secret)
+        self.firebase_app_id = firebase_app_id
+        self.app_instance_id = app_instance_id
+
+    def _build_url(self, domain):
+        return f"{domain}?firebase_app_id={self.firebase_app_id}&api_secret={self.api_secret}"
+
+    def _build_request(self, batch):
+        return {"app_instance_id": self.app_instance_id, "events": batch}
