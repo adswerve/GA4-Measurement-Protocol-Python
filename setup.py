@@ -6,7 +6,7 @@ try:
 except Exception:
     long_description="Google Analytics 4 Measurement Protocol in Python; an implementation of Google's Analytics 4 Measurement Protocol"
 
-VERSION = '1.1.1'
+VERSION = '2.0.0'
 
 setup(
     name = "ga4mp",
@@ -15,8 +15,8 @@ setup(
 
     version = VERSION or 'NOTFOUND',
 
-    author = 'Nate Bukowski',
-    author_email = 'nate.bukowski@adswerve.com',
+    author = 'Adswerve',
+    author_email = 'analytics-help@adswerve.com',
 
     url = 'https://github.com/adswerve/GA4-Measurement-Protocol-Python',
     download_url = "https://github.com/adswerve/GA4-Measurement-Protocol-Python" + VERSION,
