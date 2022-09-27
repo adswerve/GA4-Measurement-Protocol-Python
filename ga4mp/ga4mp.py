@@ -257,6 +257,8 @@ class BaseGa4mp(object):
 
             assert "name" in event, 'each event should have a "name" key'
 
+            assert "params" in event, 'each event should have a "params" key'
+
         # check for any missing or invalid parameters
 
         for e in events:
