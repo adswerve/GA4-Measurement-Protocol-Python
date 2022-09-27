@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "ga4mp"
-version = "2.0.2"
+version = "2.0.4"
 description = "Google Analytics 4 Measurement Protocol Python Module"
 authors = ["Adswerve <analytics-help@adswerve.com>"]
 license = "BSD"
 readme = "README.md"
+repository = "https://github.com/adswerve/GA4-Measurement-Protocol-Python"
 
 [tool.poetry.dependencies]
 python = "^3.6"
