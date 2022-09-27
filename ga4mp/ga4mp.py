@@ -13,9 +13,9 @@ import urllib.request
 import time
 import datetime
 import random
-from utils import params_dict
-from event import Event
-from store import BaseStore, DictStore
+from ga4mp.utils import params_dict
+from ga4mp.event import Event
+from ga4mp.store import BaseStore, DictStore
 
 import os, sys
 sys.path.append(
@@ -256,8 +256,6 @@ class BaseGa4mp(object):
             assert isinstance(event, dict), "each event should be an instance of a dictionary"
 
             assert "name" in event, 'each event should have a "name" key'
-
-            assert "params" in event, 'each event should have a "params" key'
 
         # check for any missing or invalid parameters
 

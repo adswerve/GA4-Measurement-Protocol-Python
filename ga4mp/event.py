@@ -1,4 +1,4 @@
-from item import Item
+from ga4mp.item import Item
 
 class Event(dict):
     def __init__(self, name):
