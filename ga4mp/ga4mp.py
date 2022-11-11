@@ -82,7 +82,7 @@ class BaseGa4mp(object):
     def create_new_event(self, name):
         return Event(name=name)
 
-    def send(self, events, validation_hit=False, postpone=False, date=None):
+    def send(self, events, validation_hit=False, postpone=False, sgtm_preview_header=None, date=None):
         """
         Method to send an http post request to google analytics with the specified events.
 
@@ -105,6 +105,8 @@ class BaseGa4mp(object):
             Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False
         postpone : bool, optional
             Boolean to depict if provided event list should be postponed, by default False
+        sgtm_preview_header : string, optional
+            String value to pass for "X-Gtm-Server-Preview" HTTP header, which enables use of Preview mode in a Server-Side GTM Container.
         date : datetime
             Python datetime object for sending a historical event at the given date. Date cannot be in the future.
         """
@@ -126,7 +128,7 @@ class BaseGa4mp(object):
             ]
             # send http post request
             self._http_post(
-                batched_event_list, validation_hit=validation_hit, date=date
+                batched_event_list, validation_hit=validation_hit, sgtm_preview_header=sgtm_preview_header, date=date
             )
 
     def postponed_send(self):
@@ -156,7 +158,7 @@ class BaseGa4mp(object):
 
         params_dict.update(new_name_and_parameters)
 
-    def _http_post(self, batched_event_list, validation_hit=False, postpone=False, date=None):
+    def _http_post(self, batched_event_list, validation_hit=False, postpone=False, sgtm_preview_header=None, date=None):
         """
         Method to send http POST request to google-analytics.
 
@@ -168,6 +170,8 @@ class BaseGa4mp(object):
             Boolean to depict if events should be tested against the Measurement Protocol Validation Server, by default False
         postpone : bool, optional
             Boolean to depict if provided event list should be postponed, by default False
+        sgtm_preview_header : string, optional
+            String value to pass for "X-Gtm-Server-Preview" HTTP header, which enables use of Preview mode in a Server-Side GTM Container.
         date : datetime
             Python datetime object for sending a historical event at the given date. Date cannot be in the future.
             Timestamp micros supports up to 48 hours of backdating.
