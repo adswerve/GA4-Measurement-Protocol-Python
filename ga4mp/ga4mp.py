@@ -218,6 +218,9 @@ class BaseGa4mp(object):
 
             req = urllib.request.Request(url)
             req.add_header("Content-Type", "application/json; charset=utf-8")
+            # Include "X-Gtm-Server-Preview" header if a value is present for it.
+            if sgtm_preview_header is not None:
+                req.add_header("X-Gtm-Server-Preview", sgtm_preview_header)
             jsondata = json.dumps(request)
             json_data_as_bytes = jsondata.encode("utf-8")  # needs to be bytes
             req.add_header("Content-Length", len(json_data_as_bytes))
