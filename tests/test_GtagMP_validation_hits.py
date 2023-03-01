@@ -44,26 +44,50 @@ class TestGtagMPClientValidation(unittest.TestCase):
             }
         ]
 
-        self.acceptable_http_status_codes = [200, 201, 204]
+        self.malformed_event_list = [
+            {
+                'name': '',
+                'params': {
+                    'level_name': 'First',
+                    'success': 'True'
+                }
+            },
+            {
+                'name': 'level_up',
+                'params': {
+                    'character': {},
+                    'level': 'Second'
+                }
+            }
+        ]
 
     def test_http_status_code(self):
-        status_code = self.gtag._http_post(self.event_list, validation_hit=True)
+        dictionary = self.gtag._http_post(self.event_list, validation_hit=True)
 
-        assert status_code in self.acceptable_http_status_codes
+        self.assertIsInstance(dictionary, dict) 
 
     def test_http_status_code_with_datetime_arg(self):
         dt = datetime.datetime.now()
 
-        status_code = self.gtag._http_post(self.event_list, validation_hit=True, date=dt)
+        dictionary = self.gtag._http_post(self.event_list, validation_hit=True, date=dt)
 
-        assert status_code in self.acceptable_http_status_codes
+        self.assertIsInstance(dictionary, dict) 
+    
+    def test_malformed_events_log_error_messages(self):
+        with self.assertLogs() as captured:
+            dictionary = self.gtag._http_post(self.malformed_event_list, validation_hit=True)
+        self.assertEqual(len(captured.records), 5)
+        self.assertEqual(captured.records[3].getMessage(), "| Validation messages:")
+
+
+        self.assertIsInstance(dictionary, dict) 
 
     def test_http_status_code_with_datetime_delta(self):
         dt = datetime.datetime.now() - datetime.timedelta(hours=1)
 
-        status_code = self.gtag._http_post(self.event_list, validation_hit=True, date=dt)
+        dictionary = self.gtag._http_post(self.event_list, validation_hit=True, date=dt)
 
-        assert status_code in self.acceptable_http_status_codes
+        self.assertIsInstance(dictionary, dict) 
 
 if __name__ == "__main__":
     unittest.main()

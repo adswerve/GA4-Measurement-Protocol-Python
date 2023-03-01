@@ -125,9 +125,10 @@ class BaseGa4mp(object):
                 events[event : event + 25] for event in range(0, len(events), 25)
             ]
             # send http post request
-            self._http_post(
+            return self._http_post(
                 batched_event_list, validation_hit=validation_hit, date=date
             )
+        
 
     def postponed_send(self):
         """
@@ -219,10 +220,22 @@ class BaseGa4mp(object):
             req.add_header("Content-Length", len(json_data_as_bytes))
             result = urllib.request.urlopen(req, json_data_as_bytes)
 
+            
+
             status_code = result.status
             logger.info(f"Batch Number: {batch_number}")
             logger.info(f"Status code: {status_code}")
             batch_number += 1
+
+            if validation_hit and status_code == 200:
+                response = json.loads(result.read().decode('utf8'))
+                validation_messages = response.get("validationMessages", [])
+                if validation_messages:
+                    logger.error(f"| Validation messages:")
+                    for validation in validation_messages:
+                        message = validation["description"]
+                        logger.error(f"|  {message}")
+                return response
 
         return status_code
 
