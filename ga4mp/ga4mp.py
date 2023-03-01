@@ -219,10 +219,20 @@ class BaseGa4mp(object):
             req.add_header("Content-Length", len(json_data_as_bytes))
             result = urllib.request.urlopen(req, json_data_as_bytes)
 
+            
+
             status_code = result.status
             logger.info(f"Batch Number: {batch_number}")
             logger.info(f"Status code: {status_code}")
             batch_number += 1
+
+            if validation_hit and status_code == 200:
+                validation_messages = json.loads(result.read().decode('utf8')).get("validationMessages", [])
+                if validation_messages:
+                    logger.error(f"| Validation messages:")
+                    for validation in validation_messages:
+                        message = validation["description"]
+                        logger.error(f"|  {message}")
 
         return status_code
 

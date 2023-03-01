@@ -44,6 +44,23 @@ class TestGtagMPClientValidation(unittest.TestCase):
             }
         ]
 
+        self.malformed_event_list = [
+            {
+                'name': '',
+                'params': {
+                    'level_name': 'First',
+                    'success': 'True'
+                }
+            },
+            {
+                'name': 'level_up',
+                'params': {
+                    'character': {},
+                    'level': 'Second'
+                }
+            }
+        ]
+
         self.acceptable_http_status_codes = [200, 201, 204]
 
     def test_http_status_code(self):
@@ -55,6 +72,16 @@ class TestGtagMPClientValidation(unittest.TestCase):
         dt = datetime.datetime.now()
 
         status_code = self.gtag._http_post(self.event_list, validation_hit=True, date=dt)
+
+        assert status_code in self.acceptable_http_status_codes
+    
+    def test_malformed_events_log_error_messages(self):
+        with self.assertLogs() as captured:
+            status_code = self.gtag._http_post(self.malformed_event_list, validation_hit=True)
+        self.assertEqual(len(captured.records), 9)
+        self.assertEqual(captured.records[3].getMessage(), "| Validation messages:")
+        self.assertEqual(captured.records[7].getMessage(), "| Validation messages:")
+
 
         assert status_code in self.acceptable_http_status_codes
 
