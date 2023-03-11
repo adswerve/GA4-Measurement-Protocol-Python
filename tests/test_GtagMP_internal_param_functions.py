@@ -82,7 +82,7 @@ class TestGtagMPClientInternalParamFunctions(unittest.TestCase):
             ]
         ]
 
-        with pytest.raises(AssertionError, match="each event should be a dictionary"):
+        with pytest.raises(AssertionError, match="each event should be an instance of a dictionary"):
             self.gtag._check_params(event_not_a_dict)
 
     def test_check_params_events_incorrect_key(self):
@@ -113,7 +113,7 @@ class TestGtagMPClientInternalParamFunctions(unittest.TestCase):
 
         self.gtag._check_params(event_should_get_warning)
 
-        expected_log = ('ga4mp.ga4mp', 'WARNING', "WARNING: Event parameters do not match event type.\nFor level_end event type, the correct parameter(s) are ['level_name', 'success'].\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
+        expected_log = ('ga4mp.ga4mp', 'WARNING', "WARNING: Event parameters do not match event type.\nFor level_end event type, the correct parameter(s) are ['level_name', 'success'].\nThe parameter 'success' triggered this warning.\nFor a breakdown of currently supported event types and their parameters go here: https://support.google.com/analytics/answer/9267735\n")
 
         capture.check(expected_log)
 
