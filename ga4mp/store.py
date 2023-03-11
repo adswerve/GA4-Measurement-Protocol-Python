@@ -21,6 +21,11 @@ class BaseStore(dict):
         # Helper function to set a single parameter (user or session or other).
         self._check_exists(key=param_type)
         self[param_type][name] = value
+    
+    def _delete(self, param_type, name):
+        # Helper function to set a single parameter (user or session or other).
+        self._check_exists(key=param_type)
+        del self[param_type][name]
 
     def _get_one(self, param_type, name):
         # Helper function to get a single parameter value (user or session).
@@ -37,6 +42,9 @@ class BaseStore(dict):
     # While redundant, the following make sure the distinction between session and user items is easier for the end user.
     def set_user_property(self, name, value):
         self._set(param_type="user_properties", name=name, value=value)
+    
+    def delete_user_property(self, name):
+        self._delete(param_type="user_properties", name=name)
 
     def get_user_property(self, name):
         return self._get_one(param_type="user_properties", name=name)

@@ -26,23 +26,23 @@ class TestGtagMPClientInternalPropertyFunctions(unittest.TestCase):
         self.gtag = GtagMP(api_secret=API_SECRET, measurement_id=MEASUREMENT_ID, client_id=CLIENT_ID)
 
     def test_add_user_property(self):
-        self.gtag.set_user_property("user_id","Grogu")
+        self.gtag.store.set_user_property("user_id","Grogu")
         
-        self.assertEqual(self.gtag._user_properties["user_id"], "Grogu")
+        self.assertEqual(self.gtag.store["user_properties"]["user_id"], "Grogu")
 
-    def test_add_multiple_user_properties(self):
-        self.gtag.set_user_property("user_id","Grogu")
-        self.gtag.set_user_property("region","Outer Rim")
+    def test_add_multiplestore(self):
+        self.gtag.store.set_user_property("user_id","Grogu")
+        self.gtag.store.set_user_property("region","Outer Rim")
 
-        self.assertEqual(len(self.gtag._user_properties), 2)
+        self.assertEqual(len(self.gtag.store), 2)
         
     def test_delete_user_property(self):
-        self.gtag.set_user_property("user_id","Grogu")
-        self.gtag.set_user_property("region","Outer Rim")
+        self.gtag.store.set_user_property("user_id","Grogu")
+        self.gtag.store.set_user_property("region","Outer Rim")
 
-        self.gtag.delete_user_property("user_id")
+        self.gtag.store.delete_user_property("user_id")
 
-        self.assertFalse("user_id" in self.gtag._user_properties.keys())
+        self.assertFalse("user_id" in self.gtag.store.keys())
 
 if __name__ == "__main__":
     unittest.main()
