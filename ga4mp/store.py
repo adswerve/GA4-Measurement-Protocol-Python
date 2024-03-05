@@ -23,7 +23,7 @@ class BaseStore(dict):
         self[param_type][name] = value
     
     def _delete(self, param_type, name):
-        # Helper function to set a single parameter (user or session or other).
+        # Helper function to delete a single parameter (user or session or other).
         self._check_exists(key=param_type)
         del self[param_type][name]
 
