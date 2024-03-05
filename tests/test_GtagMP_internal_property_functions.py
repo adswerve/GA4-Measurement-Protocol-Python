@@ -30,7 +30,7 @@ class TestGtagMPClientInternalPropertyFunctions(unittest.TestCase):
         
         self.assertEqual(self.gtag.store["user_properties"]["user_id"], "Grogu")
 
-    def test_add_multiplestore(self):
+    def test_add_multiple_user_properties(self):
         self.gtag.store.set_user_property("user_id","Grogu")
         self.gtag.store.set_user_property("region","Outer Rim")
 
